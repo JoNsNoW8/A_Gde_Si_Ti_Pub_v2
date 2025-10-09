@@ -1,0 +1,36 @@
+﻿@model dynamic
+@using (Html.BeginForm("Login", "Nalog", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    ViewBag.Title = "Registracija";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    @Html.AntiForgeryToken()
+    <div>
+        @Html.Label("Ime")
+        @Html.TextBox("name")
+    </div>
+    <div>
+        @Html.Label("Prezime")
+        @Html.TextBox("surname")
+    </div>
+    <div>
+        @Html.Label("Email")
+        @Html.TextBox("email")
+    </div>
+    <div>
+        @Html.Label("Korisničko ime")
+        @Html.TextBox("username")
+    </div>
+    <div>
+        @Html.Label("Lozinka")
+        @Html.Password("password")
+    </div>
+    <div>
+        <label><input type="checkbox" name="rememberMe" /> Zapamti</label>
+    </div>
+    <input type="submit" value="Log In" />
+    @Html.ValidationSummary()
+}
+
+<h2>Registracija</h2>
+
