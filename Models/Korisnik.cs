@@ -15,13 +15,17 @@ namespace A_Gde_Si_Ti_Pub.Models
         public string Username { get; set; }
         [Required]
         public string PasswordHash { get; set; }
-        [NotMapped] 
+        [NotMapped]
+        [Required]
+        [StringLength(100, MinimumLength =6)]
         public string Password { get; set; }
+        [Required]
         [StringLength(20)]
         public string Uloga { get; set; } // "Admin" ili "Korisnik"
 
         [StringLength(100)]
+        [EmailAddress(ErrorMessage = "Nevažeća email adresa.")]
         public string Email { get; set; }
-        public bool IsActive { get; set; } // Da li je nalog aktivan
+        public bool IsActive { get; set; } = true; // Da li je nalog aktivan
     }
 }

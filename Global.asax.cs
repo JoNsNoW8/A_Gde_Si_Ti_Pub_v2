@@ -30,5 +30,26 @@ namespace A_Gde_Si_Ti_Pub
                 }
             }
         }
+        protected void Application_PostAuthenticateRequest(Object sender, EventArgs e)
+        {
+            HttpCookie authCookie = Request.Cookies[FormsAuthentication.FormsCookieName];
+            if (authCookie != null)
+            {
+                try
+                {
+                    var authTicket = FormsAuthentication.Decrypt(authCookie.Value);
+                    string role = authTicket.UserData;
+
+                    // Create your custom principal
+                    var newUser = new CustomPrincipal(authTicket.Name, role);
+                    HttpContext.Current.User = newUser;
+                }
+                catch
+                {
+                    // corrupted cookie or invalid ticket
+                    FormsAuthentication.SignOut();
+                }
+            }
+        }
     }
 }

@@ -143,8 +143,10 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\NaloziController.cs" />
+    <Compile Include="Controllers\ProdavnicaController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -160,7 +162,20 @@
     <Compile Include="Migrations\202510092116019_FixPasswordNotMapped.Designer.cs">
       <DependentUpon>202510092116019_FixPasswordNotMapped.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202510100642452_indDecimalPromenjeni.cs" />
+    <Compile Include="Migrations\202510100642452_indDecimalPromenjeni.Designer.cs">
+      <DependentUpon>202510100642452_indDecimalPromenjeni.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510100704178_adminDodat.cs" />
+    <Compile Include="Migrations\202510100704178_adminDodat.Designer.cs">
+      <DependentUpon>202510100704178_adminDodat.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510101001461_finalIzmeneModela.cs" />
+    <Compile Include="Migrations\202510101001461_finalIzmeneModela.Designer.cs">
+      <DependentUpon>202510101001461_finalIzmeneModela.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\Admin.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
     <Compile Include="Models\DeloviPorudzbine.cs" />
     <Compile Include="Models\CustomPrincipal.cs" />
@@ -223,9 +238,11 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Nalozi\Login.cshtml" />
     <Content Include="Views\Nalozi\Registracija.cshtml" />
+    <Content Include="Views\Admin\Admin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Prodavnica\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
@@ -263,6 +280,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202510092116019_FixPasswordNotMapped.resx">
       <DependentUpon>202510092116019_FixPasswordNotMapped.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510100642452_indDecimalPromenjeni.resx">
+      <DependentUpon>202510100642452_indDecimalPromenjeni.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510100704178_adminDodat.resx">
+      <DependentUpon>202510100704178_adminDodat.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510101001461_finalIzmeneModela.resx">
+      <DependentUpon>202510101001461_finalIzmeneModela.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -21,10 +21,15 @@ namespace A_Gde_Si_Ti_Pub.Controllers
         //POST: Registracija
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Registracija(Korisnik korisnik)
+        public ActionResult Registracija(Korisnik korisnik, string potvrdaLozinke)
         {
             if (ModelState.IsValid)
             {
+                if (!korisnik.Password.Equals(potvrdaLozinke))
+                {
+                    ModelState.AddModelError("confirmPassword", "Lozinke se ne poklapaju.");
+                    return View(korisnik);
+                }
                 //provera da li je korisnicko ime zauzeto
                 if (db.Korisnici.Any(k => k.Username == korisnik.Username))
                 {
@@ -38,7 +43,7 @@ namespace A_Gde_Si_Ti_Pub.Controllers
                 db.SaveChanges();
 
                 //automatsko logovanje nakon registracije
-                AutentifikacijaKorisnika(korisnik.Username, korisnik.PasswordHash);
+                AutentifikacijaKorisnika(korisnik.Username, korisnik.Uloga);
                 return RedirectToAction("Index", "Home");
             }
             return View(korisnik);
@@ -57,7 +62,7 @@ namespace A_Gde_Si_Ti_Pub.Controllers
         public ActionResult Login(string username, string password, bool rememberMe, string returnUrl)
         {
             var korisnik = db.Korisnici.FirstOrDefault(k => k.Username == username && k.IsActive);
-            if(korisnik != null && BCrypt.Net.BCrypt.Verify(password, korisnik.Password))
+            if(korisnik != null && BCrypt.Net.BCrypt.Verify(password, korisnik.PasswordHash))
             {
                 AutentifikacijaKorisnika(korisnik.Username, korisnik.Uloga, rememberMe);
                 return RedirectToLocal(returnUrl);

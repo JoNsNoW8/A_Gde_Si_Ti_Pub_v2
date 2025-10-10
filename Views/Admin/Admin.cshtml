@@ -1,0 +1,74 @@
+﻿@model A_Gde_Si_Ti_Pub.Models.Admin
+@{
+    ViewBag.Title = "Admin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Admin Panel</h2>
+
+<h3>Porudžbine</h3>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr><th>ID</th><th>Datum</th><th>Ukupna Cena</th><th>Status</th><th>Akcije</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model.Porudzbine)
+        {
+            <tr>
+                <td>@p.PorudzbinaId</td>
+                <td>@p.Datum.ToShortDateString()</td>
+                <td>@p.UkupnaCena.ToString("C")</td> <!-- Currency format -->
+                <td>@p.Status</td>
+                <td>
+                    @Html.ActionLink("Uredi", "UpravljajPorudzbinama", new { id = p.PorudzbinaId }, new { @class = "btn btn-primary btn-sm" })
+                    @Html.ActionLink("Obriši", "ObrisiPorudzbinu", new { id = p.PorudzbinaId }, new { @class = "btn btn-danger btn-sm", onclick = "return confirm('Sigurno?')" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h3>Korisnici</h3>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr><th>Korisničko Ime</th><th>Email</th><th>Uloga</th><th>Aktivan</th><th>Akcije</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var k in Model.Korisnici)
+        {
+            <tr>
+                <td>@k.Username</td>
+                <td>@k.Email</td>
+                <td>@k.Uloga</td>
+                <td>@(k.IsActive ? "Da" : "Ne")</td>
+                <td>
+                    @Html.ActionLink("Deaktiviraj", "ToggleKorisnik", new { id = k.KorisnikId }, new { @class = "btn btn-warning btn-sm" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h3>Ocene</h3>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr><th>Vrednost</th><th>Komentar</th><th>Korisnik</th><th>Proizvod</th><th>Datum</th><th>Odobreno</th><th>Akcije</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var o in Model.Ocene)
+        {
+            <tr>
+                <td>@o.Vrednost / 5</td>
+                <td>@o.Komentar</td>
+                <td>@o.Korisnik?.Username</td> <!-- Safe navigation -->
+                <td>@o.Proizvod?.Naziv</td>
+                
+                
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval") <!-- For any JS validation -->
+}

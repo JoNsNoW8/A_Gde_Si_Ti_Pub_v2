@@ -31,7 +31,28 @@ namespace A_Gde_Si_Ti_Pub.Models
                 .WithMany() // Jedan korisnik moze imati vise porudzbina
                 .HasForeignKey(p => p.KorisnikId); // Strani kljuc u tabeli Porudzbine
 
+            modelBuilder.Entity<Ocena>()
+                 .HasRequired(o => o.Korisnik)
+                 .WithMany() // One user can have many ratings
+                 .HasForeignKey(o => o.KorisnikId);
+
+            modelBuilder.Entity<Ocena>()
+                 .HasOptional(o => o.Proizvod) // Optional FK
+                 .WithMany()
+                 .HasForeignKey(o => o.ProizvodId);
+
+            modelBuilder.Entity<DeloviPorudzbine>()
+                 .HasRequired(d => d.Porudzbina)
+                 .WithMany(p => p.DeloviPorudzbine)
+                 .HasForeignKey(d => d.PorudzbinaId);
+
+            modelBuilder.Entity<DeloviPorudzbine>()
+                .HasRequired(d => d.Proizvod)
+                .WithMany()
+                .HasForeignKey(d => d.ProizvodId);
+
             base.OnModelCreating(modelBuilder);
+
         }
     }
 
