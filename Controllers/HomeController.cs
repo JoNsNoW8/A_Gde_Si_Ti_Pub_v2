@@ -72,9 +72,9 @@ namespace A_Gde_Si_Ti_Pub.Controllers
         // POST: AJAX Registration for Modal (non-logged users)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public JsonResult RegisterModal(Korisnik korisnik, string confirmPassword)
+        public JsonResult RegisterModal(Korisnik korisnik, string potvrdaLozinke)
         {
-            if (!ModelState.IsValid || !korisnik.Password.Equals(confirmPassword))
+            if (!ModelState.IsValid || !korisnik.Password.Equals(potvrdaLozinke))
             {
                 return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
             }
@@ -85,6 +85,7 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             korisnik.PasswordHash = BCrypt.Net.BCrypt.HashPassword(korisnik.Password);
             korisnik.Uloga = "Korisnik";
             korisnik.IsActive = true;
+            korisnik.Email = korisnik.Email?.Trim();
             try
             {
                 db.Korisnici.Add(korisnik);
@@ -152,9 +153,19 @@ namespace A_Gde_Si_Ti_Pub.Controllers
         [Authorize]
         public ActionResult Profil() //profilna stranica kada se korisnik uloguje
         {
-            var korisnik = ((CustomPrincipal)User ).Identity.Name;
-            ViewBag.Korisnik = korisnik;
-            return View();
+            var customUser = User as CustomPrincipal;
+            if(customUser == null)
+            {
+                return RedirectToAction("Login", "Nalozi");
+            }
+
+            var korisnickoIme = customUser.Identity.Name;
+            var korisnik = db.Korisnici.FirstOrDefault(k => k.Username == korisnickoIme);
+            if(korisnik == null)
+            {
+                return HttpNotFound("Korisnik nije pronađen");
+            }
+            return View(korisnik);
         }
     }
 }

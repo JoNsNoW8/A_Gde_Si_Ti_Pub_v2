@@ -19,16 +19,7 @@ namespace A_Gde_Si_Ti_Pub
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            if (User != null && User.Identity.IsAuthenticated)
-            {
-                var authCookie = HttpContext.Current.Request.Cookies[FormsAuthentication.FormsCookieName];
-                if (authCookie != null)
-                {
-                    var ticket = FormsAuthentication.Decrypt(authCookie.Value);
-                    var principal = new CustomPrincipal(ticket.Name, ticket.UserData); // UserData will hold role
-                    HttpContext.Current.User = principal;
-                }
-            }
+            
         }
         protected void Application_PostAuthenticateRequest(Object sender, EventArgs e)
         {

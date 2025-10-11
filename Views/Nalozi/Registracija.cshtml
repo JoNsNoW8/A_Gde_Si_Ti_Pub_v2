@@ -6,7 +6,7 @@
 
 <h2>Registracija</h2>
 
-@using (Html.BeginForm("Register", "Nalog", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+@using (Html.BeginForm("Registracija", "Nalozi", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
@@ -38,8 +38,18 @@
     <div class="form-group">
         <label class="control-label col-md-2">Potvrdi Lozinku</label>
         <div class="col-md-10">
-            <input type="password" name="confirmPassword" class="form-control" required="required" />
-            @Html.ValidationMessage("confirmPassword", "", new { @class = "text-danger" }) <!-- Custom error in controller -->
+            <input type="password" name="potvrdaLozinke" class="form-control" required="required" />
+            @Html.ValidationMessage("potvrdaLozinke", "", new { @class = "text-danger", id = "confirmError" }) <!-- Custom error in controller -->
+        </div>
+    </div>
+
+    //biranje uloge
+    <div class="form-group">
+        <label class="control-label col-md-2">Uloga</label>
+        <div class="col-md-10">
+            @Html.DropDownList("Uloga", new SelectList(new Dictionary<string, string> { { "Korisnik", "Korisnik" }, { "Admin", "Administrator" } }), "Izaberite ulogu", new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Uloga, "", new { @class = "text-danger" })
+            <small class="text-muted">Nova registracija će biti kao 'Korisnik'. Admin nalozi se kreiraju posebno.</small>
         </div>
     </div>
 
@@ -56,4 +66,20 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        // Optional: Client-side password match check (shows error before submit, reduces frustration)
+        $(function () {
+            $('#potvrdaLozinke').on('input', function () {
+                var password = $('#Password').val();
+                var confirm = $(this).val();
+                var errorDiv = $('#confirmError');
+                if (password !== confirm && confirm.length > 0) {
+                    errorDiv.text('Lozinke se ne poklapaju.'); // Preview error
+                } else {
+                    errorDiv.text(''); // Clear
+                }
+            });
+        });
+    </script>
+}
 }

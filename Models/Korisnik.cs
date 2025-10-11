@@ -10,14 +10,14 @@ namespace A_Gde_Si_Ti_Pub.Models
     public class Korisnik
     {
         public int KorisnikId { get; set; }
-        [Required]
-        [StringLength(50)]
+
+        [Required(ErrorMessage = "Korisničko ime je obavezno.")]
+        [StringLength(50, MinimumLength = 3, ErrorMessage = "Korisničko ime mora imati 3-50 karaktera.")]
         public string Username { get; set; }
-        [Required]
         public string PasswordHash { get; set; }
         [NotMapped]
-        [Required]
-        [StringLength(100, MinimumLength =6)]
+        [Required(ErrorMessage ="Lozinka je obavezna.")]
+        [StringLength(100, MinimumLength =6, ErrorMessage ="Lozinka mora imati najmanje 6 karaktera.")]
         public string Password { get; set; }
         [Required]
         [StringLength(20)]

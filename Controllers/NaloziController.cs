@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using A_Gde_Si_Ti_Pub.Models;
+using BCrypt.Net;
 
 namespace A_Gde_Si_Ti_Pub.Controllers
 {
@@ -25,9 +26,9 @@ namespace A_Gde_Si_Ti_Pub.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (!korisnik.Password.Equals(potvrdaLozinke))
+                if (!string.IsNullOrEmpty(korisnik.Password) && !korisnik.Password.Equals(potvrdaLozinke))
                 {
-                    ModelState.AddModelError("confirmPassword", "Lozinke se ne poklapaju.");
+                    ModelState.AddModelError("potvrdaLozinke", "Lozinke se ne poklapaju.");
                     return View(korisnik);
                 }
                 //provera da li je korisnicko ime zauzeto
@@ -37,14 +38,26 @@ namespace A_Gde_Si_Ti_Pub.Controllers
                     return View(korisnik);
                 }
 
-                korisnik.PasswordHash = BCrypt.Net.BCrypt.HashPassword(korisnik.PasswordHash);
+                korisnik.PasswordHash = BCrypt.Net.BCrypt.HashPassword(korisnik.Password);
                 korisnik.Uloga = "Korisnik"; //default uloga
-                db.Korisnici.Add(korisnik);
-                db.SaveChanges();
+                korisnik.IsActive = true; //nalog je aktivan
+                korisnik.Email = korisnik.Email?.Trim();//uklanjanje belina oko email-a
+                try
+                {
+                    db.Korisnici.Add(korisnik);
+                    db.SaveChanges();
 
-                //automatsko logovanje nakon registracije
-                AutentifikacijaKorisnika(korisnik.Username, korisnik.Uloga);
-                return RedirectToAction("Index", "Home");
+                    //automatsko logovanje nakon registracije
+                    AutentifikacijaKorisnika(korisnik.Username, korisnik.Uloga);
+                    return RedirectToAction("Profil", "Home");
+                }
+                catch (Exception ex)
+                {
+                    // Handle DB errors (e.g., unique constraint on email if you add one)
+                    ModelState.AddModelError("", "Greška pri čuvanju korisnika u bazu: " + ex.Message);
+                    return View(korisnik);
+                }
+
             }
             return View(korisnik);
         }
@@ -59,16 +72,17 @@ namespace A_Gde_Si_Ti_Pub.Controllers
         //POST: Login
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(string username, string password, bool rememberMe, string returnUrl)
+        public ActionResult Login(string username, string password, bool? rememberMe, string returnUrl)
         {
             var korisnik = db.Korisnici.FirstOrDefault(k => k.Username == username && k.IsActive);
             if(korisnik != null && BCrypt.Net.BCrypt.Verify(password, korisnik.PasswordHash))
             {
-                AutentifikacijaKorisnika(korisnik.Username, korisnik.Uloga, rememberMe);
+                bool ostaniUlogovan = rememberMe ?? false;
+                AutentifikacijaKorisnika(korisnik.Username, korisnik.Uloga, ostaniUlogovan);
                 return RedirectToLocal(returnUrl);
             }
             ModelState.AddModelError("", "Pogresno korisnicko ime ili lozinka.");
-            return View();
+            return View(new { username, returnUrl }); // Preserve username for UX
         }
 
         //POST: Logout
@@ -86,7 +100,7 @@ namespace A_Gde_Si_Ti_Pub.Controllers
                 username,
                 DateTime.Now,
                 DateTime.Now.AddMinutes(30),
-                true,
+                rememberMe,
                 uloga // UserData (role)
     );
             var encryptedTicket = FormsAuthentication.Encrypt(ticket);

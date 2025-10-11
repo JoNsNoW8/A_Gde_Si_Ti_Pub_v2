@@ -1,0 +1,38 @@
+﻿@model A_Gde_Si_Ti_Pub.Models.Korisnik
+@{
+    ViewBag.Title = "Profil";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Profil</h2>
+
+<div class="container">
+    <h2>Moj Profil</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Vaši Podaci</h4>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">Korisničko Ime:</dt>
+                        <dd class="col-sm-9">@Model.Username</dd>
+                        <dt class="col-sm-3">Email:</dt>
+                        <dd class="col-sm-9">@Model.Email</dd>
+                        <dt class="col-sm-3">Uloga:</dt>
+                        <dd class="col-sm-9">@(Model.Uloga == "Admin" ? "Administrator" : "Korisnik")</dd>
+                        <dt class="col-sm-3">Status:</dt>
+                        <dd class="col-sm-9">@(Model.IsActive ? "Aktivan" : "Neaktivan")</dd>
+                        <!-- Optional: Add more if you expand model (e.g., Datum Kreiranja) -->
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="text-center mt-4">
+        @Html.ActionLink("Izmeni Profil", "EditProfil", "Home", null, new { @class = "btn btn-primary" }) <!-- Placeholder for future edit -->
+        @Html.ActionLink("Nazad na Početnu", "Index", "Home", null, new { @class = "btn btn-secondary" })
+    </div>
+</div>
+

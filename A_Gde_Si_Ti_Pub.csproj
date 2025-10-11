@@ -174,6 +174,18 @@
     <Compile Include="Migrations\202510101001461_finalIzmeneModela.Designer.cs">
       <DependentUpon>202510101001461_finalIzmeneModela.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202510110700017_adminOsposobljavanje.cs" />
+    <Compile Include="Migrations\202510110700017_adminOsposobljavanje.Designer.cs">
+      <DependentUpon>202510110700017_adminOsposobljavanje.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510110726485_KorisnikValidacija.cs" />
+    <Compile Include="Migrations\202510110726485_KorisnikValidacija.Designer.cs">
+      <DependentUpon>202510110726485_KorisnikValidacija.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510111259029_KorisnikHashPassword.cs" />
+    <Compile Include="Migrations\202510111259029_KorisnikHashPassword.Designer.cs">
+      <DependentUpon>202510111259029_KorisnikHashPassword.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Admin.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -239,6 +251,7 @@
     <Content Include="Views\Nalozi\Login.cshtml" />
     <Content Include="Views\Nalozi\Registracija.cshtml" />
     <Content Include="Views\Admin\Admin.cshtml" />
+    <Content Include="Views\Home\Profil.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -289,6 +302,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202510101001461_finalIzmeneModela.resx">
       <DependentUpon>202510101001461_finalIzmeneModela.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510110700017_adminOsposobljavanje.resx">
+      <DependentUpon>202510110700017_adminOsposobljavanje.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510110726485_KorisnikValidacija.resx">
+      <DependentUpon>202510110726485_KorisnikValidacija.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510111259029_KorisnikHashPassword.resx">
+      <DependentUpon>202510111259029_KorisnikHashPassword.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
