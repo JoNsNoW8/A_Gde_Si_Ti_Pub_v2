@@ -20,13 +20,14 @@
                     <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                     <li>@Html.ActionLink("About", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Prodavnica", "Index", "Prodavnica")</li>
                     @if (User.Identity.IsAuthenticated)
                     {
                         <li>@Html.ActionLink("Profil", "Profil", "Home")</li>
                         <li>@Html.ActionLink("Logout", "Logout", "Nalozi")</li>
                     }
                     else
-                    {
+                    {       //strukutra: view /action/view folder
                         <li>@Html.ActionLink("Login", "Login", "Nalozi")</li>
                         <li>@Html.ActionLink("Registracija", "Registracija", "Nalozi")</li>
                     }

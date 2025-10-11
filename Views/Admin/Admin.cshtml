@@ -6,6 +6,14 @@
 
 <h2>Admin Panel</h2>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
 <h3>Porudžbine</h3>
 <table class="table table-bordered table-striped">
     <thead>
@@ -62,8 +70,8 @@
                 <td>@o.Komentar</td>
                 <td>@o.Korisnik?.Username</td> <!-- Safe navigation -->
                 <td>@o.Proizvod?.Naziv</td>
-                
-                
+
+
             </tr>
         }
     </tbody>

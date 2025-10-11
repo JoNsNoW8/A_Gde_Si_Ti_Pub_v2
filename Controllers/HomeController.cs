@@ -28,6 +28,7 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             ViewBag.Proizvodi = db.Proizvodi.Where(p => p.Status).ToList(); // For dropdown
             return View();
         }
+        
 
         // POST: Add Review (only for logged-in users)
         [HttpPost]
@@ -165,6 +166,8 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             {
                 return HttpNotFound("Korisnik nije pronađen");
             }
+            ViewBag.IsAdmin = (korisnik.Uloga == "Admin");
+            ViewBag.CurrentUserId = korisnik.KorisnikId;
             return View(korisnik);
         }
     }

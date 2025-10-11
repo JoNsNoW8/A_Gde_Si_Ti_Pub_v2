@@ -2,6 +2,7 @@
 @{
     ViewBag.Title = "Profil";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool isAdmin = ViewBag.IsAdmin as bool? ?? false;
 }
 
 <h2>Profil</h2>
@@ -30,7 +31,73 @@
             </div>
         </div>
     </div>
+    @if (isAdmin)
+    {
+        <div class="mt-4">
+            <h3>Admin Panel - Upravljanje</h3>
+            <p>Kao administrator, možete upravljati sledećim sekcijama:</p>
+            <div class="row">
+                <!-- Users Management Card -->
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">Korisnici</h5>
+                            <p class="card-text">Prikaži listu, dodaj nove korisnike ili admine.</p>
+                            <a href="@Url.Action("UpravljajKorisnicima", "Admin")" class="btn btn-info btn-block">Prikaži Korisnike</a>
+                            <a href="@Url.Action("KreirajKorisnika", "Admin")" class="btn btn-success btn-block mt-1">Dodaj Korisnika</a>
+                            <a href="@Url.Action("KreirajAdmina", "Admin")" class="btn btn-warning btn-block mt-1">Dodaj Admina</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">Ocene (Reviews)</h5>
+                            <p class="card-text">Odobri, obriši ili upravljaj ocenama korisnika.</p>
+                            <a href="@Url.Action("UpravljajOcenama", "Admin")" class="btn btn-info btn-block">Upravljaj Ocenama</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">Prodavnica (Store)</h5>
+                            <p class="card-text">Dodaj, izmeni ili obriši proizvode.</p>
+                            <a href="@Url.Action("UpravljajProizvodima", "Admin")" class="btn btn-info btn-block">Upravljaj Proizvodima</a>
+                            <a href="@Url.Action("DodajProizvod", "Admin")" class="btn btn-success btn-block mt-1">Dodaj Proizvod</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">Porudžbine (Orders)</h5> <!---porudzbine u progresu-->
+                            <p class="card-text">Upravljaj porudžbinama (u razvoju).</p>
+                            <a href="@Url.Action("Profil", "Admin")" class="btn btn-info btn-block">Prikaži Porudžbine</a>
+                            <!-- Placeholder: Add more buttons later, e.g., @Html.ActionLink("Nova Porudžbina", "KreirajPorudzbinu", "Admin") -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Regular User: Simple message -->
+        <div class="alert alert-info mt-4">
+            <p>Kao obični korisnik, možete pregledati profil i prodavnicu. Za admin funkcije, kontaktirajte administratora.</p>
+        </div>
+    }
+
+    <!-- Common Navigation Buttons (for all users) -->
     <div class="text-center mt-4">
+        @if (isAdmin)
+        {
+            @Html.ActionLink("Idi na Admin Dashboard", "Profil", "Admin", null, new { @class = "btn btn-warning" })
+        }
         @Html.ActionLink("Izmeni Profil", "EditProfil", "Home", null, new { @class = "btn btn-primary" }) <!-- Placeholder for future edit -->
         @Html.ActionLink("Nazad na Početnu", "Index", "Home", null, new { @class = "btn btn-secondary" })
     </div>

@@ -16,10 +16,8 @@ namespace A_Gde_Si_Ti_Pub.Models
         public string Username { get; set; }
         public string PasswordHash { get; set; }
         [NotMapped]
-        [Required(ErrorMessage ="Lozinka je obavezna.")]
         [StringLength(100, MinimumLength =6, ErrorMessage ="Lozinka mora imati najmanje 6 karaktera.")]
         public string Password { get; set; }
-        [Required]
         [StringLength(20)]
         public string Uloga { get; set; } // "Admin" ili "Korisnik"
 

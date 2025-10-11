@@ -1,0 +1,64 @@
+﻿@model A_Gde_Si_Ti_Pub.Models.Proizvod
+@{
+    ViewBag.Title = "Dodaj Proizvod";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Dodaj Novi Proizvod</h2>
+
+@using (Html.BeginForm("DodajProizvod", "Admin", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" })) // enctype for future file upload
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Naziv, new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Naziv, new { @class = "form-control", required = "required", placeholder = "Naziv proizvoda (npr. Majica)" })
+            @Html.ValidationMessageFor(m => m.Naziv, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Opis, new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.TextAreaFor(m => m.Opis, new { @class = "form-control", rows = "3", placeholder = "Opis proizvoda" })
+            @Html.ValidationMessageFor(m => m.Opis, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Cena, new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Cena, new { @class = "form-control", type = "number", step = "0.01", required = "required", placeholder = "Cena (npr. 2500)" })
+            @Html.ValidationMessageFor(m => m.Cena, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Slika, new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Slika, new { @class = "form-control", placeholder = "Putanja do slike (npr. ~/Content/images/majica.jpg)" })
+            @Html.ValidationMessageFor(m => m.Slika, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Status, new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.CheckBoxFor(m => m.Status, new { @checked = "checked" }) Dostupan u prodavnici
+            @Html.ValidationMessageFor(m => m.Status, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Dodaj Proizvod" class="btn btn-success" />
+            @Html.ActionLink("Nazad", "UpravljajProizvodima", null, new { @class = "btn btn-secondary" })
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

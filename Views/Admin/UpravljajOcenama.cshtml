@@ -1,0 +1,52 @@
+﻿@model List<A_Gde_Si_Ti_Pub.Models.Ocena>
+@{
+    ViewBag.Title = "Upravljanje Ocenama";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Upravljanje Ocenama</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<p>
+    @Html.ActionLink("Nazad na Dashboard", "Profil", null, new { @class = "btn btn-secondary" })
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Vrednost</th>
+            <th>Komentar</th>
+            <th>Korisnik</th>
+            <th>Proizvod</th>
+            <th>Datum</th>
+            <th>Akcije</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ocena in Model)
+        {
+            <tr>
+                <td>@ocena.OcenaId</td>
+                <td>@ocena.Vrednost / 5</td>
+                <td>@ocena.Komentar</td>
+                <td>@ocena.Korisnik?.Username</td>
+                <td>@(ocena.ProizvodId.HasValue ? ocena.Proizvod?.Naziv : "Opšta ocena")</td>
+                <td>@ocena.Datum.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!Model.Any())
+{
+    <p>Nema ocena za upravljanje.</p>
+}

@@ -186,6 +186,26 @@
     <Compile Include="Migrations\202510111259029_KorisnikHashPassword.Designer.cs">
       <DependentUpon>202510111259029_KorisnikHashPassword.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202510111548515_slikeMozda.cs" />
+    <Compile Include="Migrations\202510111548515_slikeMozda.Designer.cs">
+      <DependentUpon>202510111548515_slikeMozda.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510111627428_sredjivanjeProdavnice.cs" />
+    <Compile Include="Migrations\202510111627428_sredjivanjeProdavnice.Designer.cs">
+      <DependentUpon>202510111627428_sredjivanjeProdavnice.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510111715342_adminIzmena.cs" />
+    <Compile Include="Migrations\202510111715342_adminIzmena.Designer.cs">
+      <DependentUpon>202510111715342_adminIzmena.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510111825327_korisnikPopravljen.cs" />
+    <Compile Include="Migrations\202510111825327_korisnikPopravljen.Designer.cs">
+      <DependentUpon>202510111825327_korisnikPopravljen.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510112003484_korisnik.cs" />
+    <Compile Include="Migrations\202510112003484_korisnik.Designer.cs">
+      <DependentUpon>202510112003484_korisnik.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Admin.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -252,10 +272,17 @@
     <Content Include="Views\Nalozi\Registracija.cshtml" />
     <Content Include="Views\Admin\Admin.cshtml" />
     <Content Include="Views\Home\Profil.cshtml" />
+    <Content Include="Views\Prodavnica\Index.cshtml" />
+    <Content Include="Views\Admin\UpravljajProizvodima.cshtml" />
+    <Content Include="Views\Admin\DodajProizvod.cshtml" />
+    <Content Include="Views\Admin\IzmeniProizvod.cshtml" />
+    <Content Include="Views\Admin\KreirajAdmina.cshtml" />
+    <Content Include="Views\Admin\UpravljajOcenama.cshtml" />
+    <Content Include="Views\Admin\UpravljajKorisnicima.cshtml" />
+    <Content Include="Views\Admin\KreirajKorisnika.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Prodavnica\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
@@ -311,6 +338,21 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202510111259029_KorisnikHashPassword.resx">
       <DependentUpon>202510111259029_KorisnikHashPassword.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510111548515_slikeMozda.resx">
+      <DependentUpon>202510111548515_slikeMozda.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510111627428_sredjivanjeProdavnice.resx">
+      <DependentUpon>202510111627428_sredjivanjeProdavnice.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510111715342_adminIzmena.resx">
+      <DependentUpon>202510111715342_adminIzmena.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510111825327_korisnikPopravljen.resx">
+      <DependentUpon>202510111825327_korisnikPopravljen.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510112003484_korisnik.resx">
+      <DependentUpon>202510112003484_korisnik.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

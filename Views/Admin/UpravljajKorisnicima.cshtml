@@ -1,0 +1,61 @@
+﻿@model List<A_Gde_Si_Ti_Pub.Models.Korisnik>
+@{
+    ViewBag.Title = "Upravljanje Korisnicima";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Upravljanje Korisnicima</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<p>
+    @Html.ActionLink("Dodaj Korisnika", "KreirajKorisnika", null, new { @class = "btn btn-success" })
+    @Html.ActionLink("Dodaj Admina", "KreirajAdmina", null, new { @class = "btn btn-warning" })
+    @Html.ActionLink("Nazad na Dashboard", "Profil", null, new { @class = "btn btn-secondary" })
+</p>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Korisničko Ime</th>
+            <th>Email</th>
+            <th>Uloga</th>
+            <th>Aktivan</th>
+            <th>Akcije</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var k in Model)
+        {
+            <tr>
+                <td>@k.KorisnikId</td>
+                <td>@k.Username</td>
+                <td>@k.Email</td>
+                <td>@k.Uloga</td>
+                <td>@(k.IsActive ? "Da" : "Ne")</td>
+                <td>
+                    @if (k.Uloga != "Admin")
+                    {
+                        @Html.ActionLink("Deaktiviraj/Aktiviraj", "ToggleKorisnik", new { id = k.KorisnikId }, new { @class = "btn btn-warning btn-sm" })
+                    }
+                    else
+                    {
+                        <span class="badge badge-danger">Admin (ne može se menjati)</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
