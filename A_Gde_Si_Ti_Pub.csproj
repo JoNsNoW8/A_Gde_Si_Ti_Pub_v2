@@ -206,6 +206,14 @@
     <Compile Include="Migrations\202510112003484_korisnik.Designer.cs">
       <DependentUpon>202510112003484_korisnik.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202510121437492_Prodavnica_Porudzbine.cs" />
+    <Compile Include="Migrations\202510121437492_Prodavnica_Porudzbine.Designer.cs">
+      <DependentUpon>202510121437492_Prodavnica_Porudzbine.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510121622220_dupliranjeProizvoda.cs" />
+    <Compile Include="Migrations\202510121622220_dupliranjeProizvoda.Designer.cs">
+      <DependentUpon>202510121622220_dupliranjeProizvoda.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Admin.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -280,6 +288,10 @@
     <Content Include="Views\Admin\UpravljajOcenama.cshtml" />
     <Content Include="Views\Admin\UpravljajKorisnicima.cshtml" />
     <Content Include="Views\Admin\KreirajKorisnika.cshtml" />
+    <Content Include="Views\Prodavnica\Korpa.cshtml" />
+    <Content Include="Views\Admin\UpravljajPorudzbinama.cshtml" />
+    <Content Include="Views\Prodavnica\KreirajPorudzbinu.cshtml" />
+    <Content Include="Views\Prodavnica\MojeKupovine.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -353,6 +365,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202510112003484_korisnik.resx">
       <DependentUpon>202510112003484_korisnik.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510121437492_Prodavnica_Porudzbine.resx">
+      <DependentUpon>202510121437492_Prodavnica_Porudzbine.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510121622220_dupliranjeProizvoda.resx">
+      <DependentUpon>202510121622220_dupliranjeProizvoda.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

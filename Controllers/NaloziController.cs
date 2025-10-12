@@ -65,8 +65,23 @@ namespace A_Gde_Si_Ti_Pub.Controllers
         //GET: Nalozi/Login
         public ActionResult Login(string returnUrl)
         {
-            ViewBag.Returnurl = returnUrl;
+            if (User.Identity.IsAuthenticated)
+            {
+                var customUser = User as CustomPrincipal;
+                if (customUser?.IsInRole("Korisnik") == true)
+                {
+                    return RedirectToLocal(returnUrl ?? Url.Action("Index", "Home"));
+                }
+                else
+                {
+                    // For Admin: Redirect to profile with message
+                    TempData["InfoMessage"] = "Već ste ulogovani kao Admin. Za kupovinu, odjavite se i ulogujte sa Korisnik nalogom.";
+                    return RedirectToAction("Profil", "Home");
+                }
+            }
+            ViewBag.ReturnUrl = returnUrl;
             return View();
+
         }
 
         //POST: Login

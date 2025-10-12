@@ -12,6 +12,7 @@ namespace A_Gde_Si_Ti_Pub.Models
         public int ProizvodId { get; set; }
         [Required]
         [StringLength(100)]
+        [Index(IsUnique = true)]
         public string Naziv { get; set; }
         [StringLength(500)]
         public string Opis { get; set; } // Optional description

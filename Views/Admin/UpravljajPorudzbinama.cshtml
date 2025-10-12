@@ -1,0 +1,104 @@
+﻿@model List<A_Gde_Si_Ti_Pub.Models.Porudzbina>
+@{
+    ViewBag.Title = "Upravljanje Porudžbinama";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Upravljanje Porudžbinama (Sve)</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<p>
+    Ovde možete pregledati sve porudžbine, urediti status ili obrisati.
+    @Html.ActionLink("Nazad na početnu", "Index", "Home", null, new { @class = "btn btn-secondary" })
+</p>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        <p>Nema porudžbina u sistemu.</p>
+    </div>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID Porudžbine</th>
+                <th>Korisnik</th>
+                <th>Datum</th>
+                <th>Ukupna Cena</th>
+                <th>Status</th>
+                <th>Stavke (Proizvodi)</th>
+                <th>Akcije</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var porudzbina in Model)
+            {
+                <tr>
+                    <td><strong>@porudzbina.PorudzbinaId</strong></td>
+                    <td>@(porudzbina.Korisnik?.Username ?? "Nepoznato")</td>
+                    <td>@porudzbina.Datum.ToString("dd.MM.yyyy HH:mm")</td>
+                    <td class="text-success">@porudzbina.UkupnaCena.ToString("C")</td>
+                    <td>
+                        <span class="badge badge-@(porudzbina.Status == "Obrada" ? "warning" : porudzbina.Status == "Poslato" ? "info" : "success")">
+                            @porudzbina.Status
+                        </span>
+                    </td>
+                    <td>
+                        @if (porudzbina.DeloviPorudzbine != null && porudzbina.DeloviPorudzbine.Any())
+                        {
+                            <ul class="list-unstyled mb-0">
+                                @foreach (var deo in porudzbina.DeloviPorudzbine.Take(3)) // Show first 3 to avoid clutter
+                                {
+                                    <li>
+                                        @deo.Proizvod?.Naziv (x@deo.Kolicina) - @deo.Cena.ToString("C") po kom
+                                    </li>
+                                }
+                                @if (porudzbina.DeloviPorudzbine.Count > 3)
+                                {
+                                    <li class="text-muted">... i još @(porudzbina.DeloviPorudzbine.Count - 3) stavki</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Nema stavki</span>
+                        }
+                    </td>
+                    <td>
+                        <!-- Edit Link (to your existing UpravljajPorudzbinama GET) -->
+                        @Html.ActionLink("Uredi", "UpravljajPorudzbinama", new { id = porudzbina.PorudzbinaId }, new { @class = "btn btn-warning btn-sm" })
+
+                        <!-- Delete Form (POST to your existing ObrisiPorudzbinu) -->
+                        @using (Html.BeginForm("ObrisiPorudzbinu", "Admin", new { porudzbinaId = porudzbina.PorudzbinaId }, FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Sigurno želite da obrišete porudžbinu ID @porudzbina.PorudzbinaId? Ovo je nepovratno.');">
+                                Obriši
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Optional: Pagination or summary if many orders -->
+    <div class="text-center mt-3">
+        <p>Ukupno porudžbina: @Model.Count</p>
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <!-- No additional JS needed; confirm() is native -->
+}

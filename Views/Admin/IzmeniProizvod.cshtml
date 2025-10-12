@@ -6,10 +6,12 @@
 
 <h2>Dodaj Novi Proizvod</h2>
 
-@using (Html.BeginForm("IzmeniProizvod", "Admin", new { id = Model.ProizvodId }, FormMethod.Post, new { @class = "form-horizontal", role = "form"})) // enctype for future file upload
+@using (Html.BeginForm("IzmeniProizvod", "Admin", new { id = Model.ProizvodId }, FormMethod.Post, new { @class = "form-horizontal", role = "form" })) // enctype for future file upload
 {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    @Html.HiddenFor(m => m.ProizvodId)
 
     <div class="form-group">
         @Html.LabelFor(m => m.Naziv, new { @class = "control-label col-md-2" })

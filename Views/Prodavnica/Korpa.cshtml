@@ -1,0 +1,102 @@
+﻿@model List<A_Gde_Si_Ti_Pub.Models.DeloviPorudzbine>
+@{
+    ViewBag.Title = "Korpa";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    decimal ukupnaCena = ViewBag.UkupnaCena as decimal? ?? 0;
+}
+
+<h2>Vaša Korpa</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-info">@ViewBag.Message</div>
+    <p>@Html.ActionLink("Nastavi Kupovinu", "Index", "Prodavnica", null, new { @class = "btn btn-primary" })</p>
+}
+else if (!Model.Any())
+{
+    <div class="alert alert-info">Korpa je prazna.</div>
+    <p>@Html.ActionLink("Idi na Prodavnicu", "Index", "Prodavnica", null, new { @class = "btn btn-primary" })</p>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Proizvod</th>
+                <th>Količina</th>
+                <th>Cena po Komadu</th>
+                <th>Subtotal</th>
+                <th>Akcije</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <strong>@item.Proizvod?.Naziv</strong><br />
+                        <small><img src="@item.Proizvod?.Slika" alt="@item.Proizvod?.Naziv" style="width: 50px;" /></small>
+                    </td>
+                    <td>
+                        <input type="number" id="kolicina-@item.ProizvodId" value="@item.Kolicina" min="1" class="form-control" style="width: 80px;" />
+                    </td>
+                    <td>@item.Cena.ToString("C")</td>
+                    <td id="subtotal-@item.ProizvodId">@item.Subtotal.ToString("C")</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="azurirajKolicinu(@item.ProizvodId)">Ažuriraj</button>
+                        <button class="btn btn-danger btn-sm" onclick="ukloniIzKorpe(@item.ProizvodId)">Ukloni</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr class="table-info">
+                <th colspan="3">Ukupno:</th>
+                <th id="ukupno">@ukupnaCena.ToString("C")</th>
+                <th></th>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="text-center mt-4">
+        @using (Html.BeginForm("KreirajPorudzbinu", "Prodavnica", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-success btn-lg" onclick="return confirm('Sigurno želite da kreirate porudžbinu? Ovo će sačuvati narudžbinu u bazu.')">
+                Kreiraj Porudžbinu (Ukupno: @ukupnaCena.ToString("C"))
+            </button>
+        }
+        @Html.ActionLink("Nastavi Kupovinu", "Index", "Prodavnica", null, new { @class = "btn btn-secondary" })
+    </div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        function azurirajKolicinu(proizvodId) {
+            var kolicina = $('#kolicina-' + proizvodId).val();
+            $.post('@Url.Action("AzurirajKorpu", "Prodavnica")', { proizvodId: proizvodId, kolicina: kolicina }, function (data) {
+                if (data.success) {
+                    location.reload(); // Refresh to update totals
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+
+        function ukloniIzKorpe(proizvodId) {
+            if (confirm('Sigurno ukloniti ovu stavku?')) {
+                azurirajKolicinu(proizvodId, 0);
+            }
+        }
+    </script>
+}

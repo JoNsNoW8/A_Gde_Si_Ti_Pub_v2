@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
-using System.Data.Entity;
 using System.Web.Mvc;
 using A_Gde_Si_Ti_Pub.Models;
+using Microsoft.Ajax.Utilities;
 
 namespace A_Gde_Si_Ti_Pub.Controllers
 {
@@ -16,16 +17,14 @@ namespace A_Gde_Si_Ti_Pub.Controllers
         public ActionResult Index()
         {
             var customUser = User as CustomPrincipal;
-            if (User.Identity.IsAuthenticated && customUser.IsInRole("Korisnik") != true)
-            {
-                ViewBag.MozeKorpa = false;
-            }
-            else
-            {
-                ViewBag.MozeKorpa = User.Identity.IsAuthenticated;
-            }
+            ViewBag.MozeKorpa = User.Identity.IsAuthenticated && customUser?.IsInRole("Korisnik") == true;
 
-            var proizvodi = db.Proizvodi.Where(p => p.Status).ToList();
+            var proizvodi = db.Proizvodi
+                .Where(p => p.Status)
+                .OrderBy(p => p.Naziv) // Optional: Sort by name
+                .GroupBy(p => p.Naziv) // Group by name to avoid duplicates
+                .Select(g => g.FirstOrDefault()) // Select first from each 
+                .ToList();
             return View(proizvodi);
         }
 
@@ -42,10 +41,27 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             if (!korpa.Any())
             {
                 TempData["ErrorMessage"] = "Korpa je prazna";
-                return RedirectToAction("Index");
+                return RedirectToAction("Korpa");
             }
-            var porudzbina = new Porudzbina { DeloviPorudzbine = korpa };
-            porudzbina.UkupnaCena = korpa.Sum(dp => dp.Cena * dp.Kolicina);
+            foreach (var item in korpa)
+            {
+                item.Proizvod = db.Proizvodi.Find(item.ProizvodId);
+            }
+
+            var korisnikId = TrenutniKupacId();
+            var korisnik = db.Korisnici.Find(korisnikId);
+            var porudzbina = new Porudzbina
+            {
+                KorisnikId = korisnikId,
+                Ime = "", // Empty for form fill
+                Prezime = "",
+                Adresa = "",
+                Email = korisnik?.Email ?? "", // Pre-fill from profile
+                DeloviPorudzbine = korpa,
+                Datum = DateTime.Now,
+                UkupnaCena = korpa.Sum(dp => dp.Cena * dp.Kolicina) // Pre-calculate
+            };
+            ViewBag.Korpa = korpa;
             return View(porudzbina);
         }
 
@@ -60,49 +76,109 @@ namespace A_Gde_Si_Ti_Pub.Controllers
                 return RedirectToAction("Login", "Nalozi");
             }
 
-            if (!ModelState.IsValid || !porudzbina.DeloviPorudzbine.Any())
+            var korpa = Session["Korpa"] as List<DeloviPorudzbine> ?? new List<DeloviPorudzbine>();
+            if (!ModelState.IsValid || !korpa.Any())
             {
-                // Reload cart if invalid
-                porudzbina.DeloviPorudzbine = Session["Korpa"] as List<DeloviPorudzbine> ?? new List<DeloviPorudzbine>();
-                porudzbina.UkupnaCena = porudzbina.DeloviPorudzbine.Sum(dp => dp.Cena * dp.Kolicina);
-                return View(porudzbina);
+                // Re-populate for error display
+                porudzbina.DeloviPorudzbine = korpa;
+                foreach (var item in korpa)
+                {
+                    item.Proizvod = db.Proizvodi.Find(item.ProizvodId);
+                }
+                ViewBag.Korpa = korpa;
+                porudzbina.UkupnaCena = korpa.Sum(dp => dp.Cena * dp.Kolicina);
+                return View(porudzbina); // Return with errors
             }
-
+            // Bind user details from form
             porudzbina.KorisnikId = TrenutniKupacId();
-            porudzbina.Status = "Obrada";
+            porudzbina.Status = "Obrada"; // Default status
             porudzbina.Datum = DateTime.Now;
-            porudzbina.UkupnaCena = porudzbina.DeloviPorudzbine.Sum(dp => dp.Cena * dp.Kolicina);
+            porudzbina.UkupnaCena = korpa.Sum(dp => dp.Cena * dp.Kolicina); // Recalculate
 
             try
             {
+                // Save main order
                 db.Porudzbine.Add(porudzbina);
-                db.SaveChanges(); // Save order to get PorudzbinaId
-
-                foreach (var deo in porudzbina.DeloviPorudzbine)
+                db.SaveChanges(); // Gets PorudzbinaId
+                                  // Save order items
+                foreach (var deo in korpa)
                 {
                     var proizvod = db.Proizvodi.Find(deo.ProizvodId);
                     if (proizvod == null || !proizvod.Status)
                     {
                         ModelState.AddModelError("", "Proizvod nije dostupan.");
-                        db.Entry(porudzbina).State = EntityState.Deleted; // Rollback if needed
+                        db.Porudzbine.Remove(porudzbina); // Rollback
                         db.SaveChanges();
+                        ViewBag.Korpa = korpa;
                         return View(porudzbina);
                     }
-                    deo.PorudzbinaId = porudzbina.PorudzbinaId; // Now valid
+                    deo.PorudzbinaId = porudzbina.PorudzbinaId;
                     db.DeloviPorudzbine.Add(deo);
                 }
                 db.SaveChanges();
-                Session["Korpa"] = null; // Clear cart
-                TempData["SuccessMessage"] = "Porudžbina uspešno kreirana!";
-                return RedirectToAction("MojeKupovine");
+                // Clear cart after success
+                Session["Korpa"] = null;
+                TempData["SuccessMessage"] = $"Porudžbina #{porudzbina.PorudzbinaId} uspešno kreirana! Hvala na kupovini.";
+                return RedirectToAction("MojeKupovine"); // Or a success page
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Greška pri kreiranju porudžbine: " + ex.Message);
+                ViewBag.Korpa = korpa;
+                porudzbina.UkupnaCena = korpa.Sum(dp => dp.Cena * dp.Kolicina);
                 return View(porudzbina);
             }
         }
 
+        public ActionResult Korpa()
+        {
+            var customUser = User as CustomPrincipal;
+            if (customUser?.IsInRole("Korisnik") != true)
+            {
+                return RedirectToAction("Login", "Nalozi");
+            }
+            var korpa = Session["Korpa"] as List<DeloviPorudzbine> ?? new List<DeloviPorudzbine>();
+            if (!korpa.Any())
+            {
+                ViewBag.Message = "Vaša korpa je prazna.";
+                return View(new List<DeloviPorudzbine>());
+            }
+            // Load product details for display
+            foreach (var item in korpa)
+            {
+                item.Proizvod = db.Proizvodi.Find(item.ProizvodId); // Eager load name/image
+            }
+            ViewBag.UkupnaCena = korpa.Sum(item => item.Subtotal); // Total for view
+            return View(korpa);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public ActionResult AzurirajKorpu(int proizvodId, int kolicina)
+        {
+            var customUser = User as CustomPrincipal;
+            if (customUser?.IsInRole("Korisnik") != true)
+            {
+                return Json(new { success = false, message = "Niste ovlašćeni." });
+            }
+            var korpa = Session["Korpa"] as List<DeloviPorudzbine> ?? new List<DeloviPorudzbine>();
+            var item = korpa.FirstOrDefault(i => i.ProizvodId == proizvodId);
+            if (item != null)
+            {
+                if (kolicina <= 0)
+                {
+                    korpa.Remove(item); // Remove if 0
+                }
+                else
+                {
+                    item.Kolicina = kolicina; // Update quantity
+                }
+                Session["Korpa"] = korpa;
+                return Json(new { success = true, totalItems = korpa.Count, subtotal = item?.Subtotal ?? 0 });
+            }
+            return Json(new { success = false, message = "Stavka nije pronađena." });
+        }
         [Authorize]
         public ActionResult MojeKupovine() //istorija porudzbina
         {
@@ -113,8 +189,10 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             }
             var korisnikId = TrenutniKupacId();
             var porudzbine = db.Porudzbine.Where(p => p.KorisnikId == korisnikId)
-                .Include(p => p.DeloviPorudzbine.Select(dp => dp.Proizvod))
-                .ToList();
+        .Include(p => p.Korisnik)
+        .Include(p => p.DeloviPorudzbine.Select(dp => dp.Proizvod))
+        .OrderByDescending(p => p.Datum) // Newest first
+        .ToList();
             return View(porudzbine);
         }
 
@@ -136,10 +214,18 @@ namespace A_Gde_Si_Ti_Pub.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DodajUKorpu(int proizvodId, int kolicina = 1)
         {
+
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Nalozi", new { returnUrl = Url.Action("Index") }); // Redirect if not Korisnik
+            }
+
             var customUser = User as CustomPrincipal;
             if (customUser?.IsInRole("Korisnik") != true)
             {
-                return RedirectToAction("Login", "Nalozi"); // Redirect if not Korisnik
+                // NEW: For Admin: Redirect to profile with message (no login)
+                TempData["ErrorMessage"] = "Admin nalog ne može dodavati u korpu. Koristite Korisnik nalog za kupovinu.";
+                return RedirectToAction("Profil", "Home");
             }
 
             var korpa = Session["Korpa"] as List<DeloviPorudzbine> ?? new List<DeloviPorudzbine>();

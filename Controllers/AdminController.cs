@@ -53,15 +53,28 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             {
                 try
                 {
+                    if (db.Proizvodi.Any(p => p.Naziv.ToLower() == proizvod.Naziv.ToLower().Trim()))
+                    {
+                        ModelState.AddModelError("Naziv", "Proizvod sa sličnim nazivom već postoji. Izaberite jedinstveni naziv.");
+                        return View(proizvod);
+                    }
                     db.Proizvodi.Add(proizvod);
                     db.SaveChanges();
-                    TempData["SuccessMessage"] = "Proizvod je uspešno dodat.";
+                    TempData["SuccessMessage"] = $"Proizvod '{proizvod.Naziv}' uspešno dodat!";
                     return RedirectToAction("UpravljajProizvodima");
                 }
 
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Greška pri dodavanju: " + ex.Message);
+                    if (ex.Message.Contains("unique") || ex.Message.Contains("duplicate"))
+                    {
+                        ModelState.AddModelError("Naziv", "Naziv je već zauzet. Pokušajte drugi.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Greška pri dodavanju: " + ex.Message);
+                    }
+                    return View(proizvod);
                 }
             }
             return View(proizvod);
@@ -76,23 +89,39 @@ namespace A_Gde_Si_Ti_Pub.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult IzmeniProizvod(Proizvod proizvod)
+        public ActionResult IzmeniProizvod(Proizvod formProizvod)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    db.Entry(proizvod).State = EntityState.Modified;
+                    // NEW: Load the original entity from DB by ID (ensures it's attached)
+                    var originalProizvod = db.Proizvodi.Find(formProizvod.ProizvodId);
+                    if (originalProizvod == null)
+                    {
+                        return HttpNotFound("Proizvod nije pronađen. Možda je obrisan.");
+                    }
+                    // NEW: Copy properties from form to original (safe merge)
+                    originalProizvod.Naziv = formProizvod.Naziv;
+                    originalProizvod.Opis = formProizvod.Opis;
+                    originalProizvod.Cena = formProizvod.Cena;
+                    originalProizvod.Slika = formProizvod.Slika;
+                    originalProizvod.Status = formProizvod.Status;
+                    // Save the attached entity (EF knows it's modified)
                     db.SaveChanges();
-                    TempData["SuccessMessage"] = "Proizvod je uspešno izmenjen.";
+                    TempData["SuccessMessage"] = $"Proizvod '{originalProizvod.Naziv}' uspešno izmenjen!";
                     return RedirectToAction("UpravljajProizvodima");
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", "Greška pri izmeni: " + ex.Message);
+                    // NEW: More specific error handling
+                    ModelState.AddModelError("", $"Greška pri izmeni: {ex.Message}. Ako se ponavlja, proverite da li je proizvod još u bazi.");
+                    // Re-load for error display
+                    var errorProizvod = db.Proizvodi.Find(formProizvod.ProizvodId);
+                    return View(errorProizvod ?? formProizvod);
                 }
             }
-            return View(proizvod);
+            return View(formProizvod);
         }
 
         public ActionResult ObrisiProizvod(int id)
@@ -118,12 +147,13 @@ namespace A_Gde_Si_Ti_Pub.Controllers
         }
 
         //CRUD za porudzbine
-        public ActionResult UpravljajPorudzbinama(int id)
+        public ActionResult UpravljajPorudzbinama()
         {
             var porudzbina = db.Porudzbine
+              .Include(p => p.Korisnik)
               .Include(p => p.DeloviPorudzbine.Select(dp => dp.Proizvod))
-              .FirstOrDefault(p => p.PorudzbinaId == id);
-            if (porudzbina == null) return HttpNotFound();
+              .OrderByDescending(p => p.Datum)
+              .ToList();
             return View(porudzbina);
         }
 
@@ -144,7 +174,7 @@ namespace A_Gde_Si_Ti_Pub.Controllers
                 db.Porudzbine.Remove(porudzbina);
                 db.SaveChanges();
             }
-            return RedirectToAction("Profil");
+            return RedirectToAction("Profil", "Home");
         }
 
         //CRUD za ocene

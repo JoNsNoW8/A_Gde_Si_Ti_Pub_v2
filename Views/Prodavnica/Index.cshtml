@@ -13,15 +13,28 @@
     @if (!User.Identity.IsAuthenticated)
     {
         <div class="alert alert-info">
-            <p>Ulogujte se da biste dodali u korpu i naručili.</p>
+            <p>Dobrodošli! Možete pregledati proizvode, ali se ulogujte da biste dodali u korpu i naručili.</p>
             @Html.ActionLink("Prijavi Se", "Login", "Nalozi", new { returnUrl = Request.RawUrl }, new { @class = "btn btn-primary" })
         </div>
     }
-    else if (!MozeKorpa)
+    else
     {
-        <div class="alert alert-warning">
-            <p>Možete pregledati proizvode, ali nemate dozvolu za kupovinu (kontaktirajte admina).</p>
-        </div>
+        var customUser = User as A_Gde_Si_Ti_Pub.Models.CustomPrincipal;
+        if (customUser?.IsInRole("Korisnik") != true)
+        {
+            <!-- NEW: Specific message for Admin or other roles -->
+            <div class="alert alert-warning">
+                <p>
+                    Vaš nalog (@User.Identity.Name) ne podržava kupovinu (samo Korisnik uloga).
+                    <a href="@Url.Action("Profil", "Home")">Pogledajte profil</a> ili
+                    <a href="@Url.Action("Logout", "Nalozi")">odjavite se</a> i ulogujte se sa Korisnik nalogom.
+                </p>
+            </div>
+        }
+        else
+        {
+            <!-- For Korisnik: No message needed -->
+        }
     }
 
     @if (TempData["SuccessMessage"] != null)
@@ -33,102 +46,46 @@
         <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
     }
 
-<div class="row">
-    @foreach (var proizvod in Model)
-    {
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <img src="@Url.Content(proizvod.Slika)" class="card-img-top" alt="@proizvod.Naziv" style="height: 200px; object-fit: cover;" />
-                <div class="card-body">
-                    <h5 class="card-title">@proizvod.Naziv</h5>
-                    <p class="card-text">@proizvod.Opis</p>
-                    <p class="text-primary h5">@proizvod.Cena.ToString("C")</p> <!-- e.g., 25,00 RSD -->
-                </div>
-                <div class="card-footer">
-                    @if (MozeKorpa)
-                    {
-                        using (Html.BeginForm("DodajUKorpu", "Prodavnica", FormMethod.Post))
+    <div class="row">
+        @foreach (var proizvod in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="@Url.Content(proizvod.Slika ?? "~/Content/Proizvodi/majica.jpg")"
+                         class="card-img-top"
+                         alt="@proizvod.Naziv"
+                         style="height: 200px; object-fit: cover;"
+                         onerror="this.src='https://via.placeholder.com/300x200?text=No+Image';" />
+                    <div class="card-body">
+                        <h5 class="card-title">@proizvod.Naziv</h5>
+                        <p class="card-text">@proizvod.Opis</p>
+                        <p class="text-primary h5">@proizvod.Cena.ToString("C")</p>
+                    </div>
+                    <div class="card-footer">
+                        @if (MozeKorpa)
                         {
-                            @Html.AntiForgeryToken()
-                            @Html.Hidden("proizvodId", proizvod.ProizvodId)
-                            <div class="input-group">
-                                <input type="number" name="kolicina" value="1" min="1" class="form-control" style="width: 80px;" />
-                                <button type="submit" class="btn btn-success">Dodaj u Korpu</button>
-                            </div>
+                            using (Html.BeginForm("DodajUKorpu", "Prodavnica", FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.Hidden("proizvodId", proizvod.ProizvodId)
+                                <div class="input-group">
+                                    <input type="number" name="kolicina" value="1" min="1" class="form-control" style="width: 80px;" />
+                                    <button type="submit" class="btn btn-success">Dodaj u Korpu</button>
+                                </div>
+                            }
                         }
-                    }
-                    else
-                    {   //neulogovan korisnik
-                        <a href="@Url.Action("Login", "Nalozi", new { returnUrl = Request.RawUrl })" class="btn btn-outline-secondary">
-                            Dodaj u Korpu <small>(Ulogujte se)</small>
-                        </a>
-                    }
+                        else
+                        {   //neulogovan korisnik
+                            <a href="@Url.Action("Login", "Nalozi", new { returnUrl = Request.RawUrl })" class="btn btn-outline-secondary">
+                                Dodaj u Korpu <small>(Ulogujte se)</small>
+                            </a>
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
 
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <img src="@Url.Content(proizvod.Slika)" class="card-img-top" alt="@proizvod.Naziv" style="height: 200px; object-fit: cover;" />
-            <div class="card-body">
-                <h5 class="card-title">@proizvod.Naziv</h5>
-                <p class="card-text">@proizvod.Opis</p>
-                <p class="text-primary h5">@proizvod.Cena.ToString("C")</p> <!-- e.g., 25,00 RSD -->
-            </div>
-            <div class="card-footer">
-                @if (MozeKorpa)
-                {
-                    using (Html.BeginForm("DodajUKorpu", "Prodavnica", FormMethod.Post))
-                    {
-                        @Html.AntiForgeryToken()
-                        @Html.Hidden("proizvodId", proizvod.ProizvodId)
-                        <div class="input-group">
-                            <input type="number" name="kolicina" value="1" min="1" class="form-control" style="width: 80px;" />
-                            <button type="submit" class="btn btn-success">Dodaj u Korpu</button>
-                        </div>
-                    }
-                }
-                else
-                {   //neulogovan korisnik
-                    <a href="@Url.Action("Login", "Nalozi", new { returnUrl = Request.RawUrl })" class="btn btn-outline-secondary">
-                        Dodaj u Korpu <small>(Ulogujte se)</small>
-                    </a>
-                }
-            </div>
-        </div>
+        }
     </div>
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <img src="@Url.Content(proizvod.Slika)" class="card-img-top" alt="@proizvod.Naziv" style="height: 200px; object-fit: cover;" />
-            <div class="card-body">
-                <h5 class="card-title">@proizvod.Naziv</h5>
-                <p class="card-text">@proizvod.Opis</p>
-                <p class="text-primary h5">@proizvod.Cena.ToString("C")</p> <!-- e.g., 25,00 RSD -->
-            </div>
-            <div class="card-footer">
-                @if (MozeKorpa)
-                {
-                    using (Html.BeginForm("DodajUKorpu", "Prodavnica", FormMethod.Post))
-                    {
-                        @Html.AntiForgeryToken()
-                        @Html.Hidden("proizvodId", proizvod.ProizvodId)
-                        <div class="input-group">
-                            <input type="number" name="kolicina" value="1" min="1" class="form-control" style="width: 80px;" />
-                            <button type="submit" class="btn btn-success">Dodaj u Korpu</button>
-                        </div>
-                    }
-                }
-                else
-                {   //neulogovan korisnik
-                    <a href="@Url.Action("Login", "Nalozi", new { returnUrl = Request.RawUrl })" class="btn btn-outline-secondary">
-                        Dodaj u Korpu <small>(Ulogujte se)</small>
-                    </a>
-                }
-            </div>
-        </div>
-    </div>
-    }
-</div>
 
     @if (Model.Count == 0)
     {

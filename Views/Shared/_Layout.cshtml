@@ -10,26 +10,33 @@
 <body>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
         <div class="container">
-            @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            @Html.ActionLink("A gde si ti", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
-                    <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("About", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Prodavnica", "Index", "Prodavnica")</li>
+                    <li>@Html.ActionLink("Počena", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Prodavnica", "Index", "Prodavnica", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Meni", "Meni", "Meni", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("O nama", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Kontakt", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <li>@Html.ActionLink("Profil", "Profil", "Home")</li>
-                        <li>@Html.ActionLink("Logout", "Logout", "Nalozi")</li>
+                        var customUser = User as A_Gde_Si_Ti_Pub.Models.CustomPrincipal;
+                        if (customUser?.IsInRole("Korisnik") == true)
+                        {
+                            <li>@Html.ActionLink("Korpa", "Korpa", "Prodavnica", null, new { @class = "nav-link" })</li>
+                        }
+
+                        <li>@Html.ActionLink("Profil", "Profil", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+                        <li>@Html.ActionLink("Odjavi se", "Logout", "Nalozi", new { area = "" }, new { @class = "nav-link" })</li>
                     }
                     else
                     {       //strukutra: view /action/view folder
-                        <li>@Html.ActionLink("Login", "Login", "Nalozi")</li>
-                        <li>@Html.ActionLink("Registracija", "Registracija", "Nalozi")</li>
+                        <li>@Html.ActionLink("Prijavi se", "Login", "Nalozi", new { area = "" }, new { @class = "nav-link" })</li>
+                        <li>@Html.ActionLink("Registruj se", "Registracija", "Nalozi", new { area = "" }, new { @class = "nav-link" })</li>
                     }
                 </ul>
             </div>

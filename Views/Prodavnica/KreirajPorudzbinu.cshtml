@@ -1,0 +1,122 @@
+﻿@model A_Gde_Si_Ti_Pub.Models.Porudzbina
+@{
+    ViewBag.Title = "Kreiraj Porudžbinu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var korpa = ViewBag.Korpa as List<A_Gde_Si_Ti_Pub.Models.DeloviPorudzbine>;
+    decimal ukupnaCena = Model.UkupnaCena;
+}
+
+<h2>Kreirajte Porudžbinu</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<div class="row">
+    <!-- Left: Cart Summary -->
+    <div class="col-md-6">
+        <h4>Vaša Korpa (Pregled)</h4>
+        @if (korpa != null && korpa.Any())
+        {
+            <table class="table table-bordered table-sm">
+                <thead>
+                    <tr>
+                        <th>Proizvod</th>
+                        <th>Količina</th>
+                        <th>Cena</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in korpa)
+                    {
+                        <tr>
+                            <td>@item.Proizvod?.Naziv</td>
+                            <td>@item.Kolicina</td>
+                            <td>@item.Cena.ToString("C")</td>
+                            <td>@item.Subtotal.ToString("C")</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr class="table-info">
+                        <th colspan="3">Ukupno:</th>
+                        <th>@ukupnaCena.ToString("C")</th>
+                    </tr>
+                </tfoot>
+            </table>
+        }
+        else
+        {
+            <div class="alert alert-warning">Korpa je prazna. <a href="@Url.Action("Index")">Vrati se u prodavnicu</a>.</div>
+        }
+    </div>
+
+    <!-- Right: User Details Form -->
+    <div class="col-md-6">
+        <h4>Detalji Dostave</h4>
+        <p>Popunite vaše podatke za dostavu. Porudžbina će biti obrađena uskoro.</p>
+
+        @using (Html.BeginForm("KreirajPorudzbinu", "Prodavnica", FormMethod.Post, new { @class = "form-horizontal" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <!-- Ime (Name) -->
+            <div class="form-group">
+                @Html.LabelFor(m => m.Ime, new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.TextBoxFor(m => m.Ime, new { @class = "form-control", required = "required", placeholder = "Ime" })
+                    @Html.ValidationMessageFor(m => m.Ime, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <!-- Prezime (Surname) -->
+            <div class="form-group">
+                @Html.LabelFor(m => m.Prezime, new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.TextBoxFor(m => m.Prezime, new { @class = "form-control", required = "required", placeholder = "Prezime" })
+                    @Html.ValidationMessageFor(m => m.Prezime, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <!-- Adresa (Address) -->
+            <div class="form-group">
+                @Html.LabelFor(m => m.Adresa, new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.TextAreaFor(m => m.Adresa, new { @class = "form-control", rows = "3", required = "required", placeholder = "Adresa (ulica, broj, grad, poštanski broj)" })
+                    @Html.ValidationMessageFor(m => m.Adresa, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <!-- Email (pre-filled from profile) -->
+            <div class="form-group">
+                @Html.LabelFor(m => m.Email, new { @class = "control-label col-md-3" })
+                <div class="col-md-9">
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email", required = "required" })
+                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <!-- Hidden fields for cart (not needed since session-based, but for completeness) -->
+            @Html.HiddenFor(m => m.KorisnikId)
+            @Html.HiddenFor(m => m.Datum)
+            @Html.HiddenFor(m => m.UkupnaCena)
+            @Html.HiddenFor(m => m.Status, new { value = "Obrada" })
+
+            <div class="form-group">
+                <div class="col-md-offset-3 col-md-9">
+                    <button type="submit" class="btn btn-success btn-lg" onclick="return confirm('Potvrdite porudžbinu? Ukupno: @ukupnaCena.ToString("C"). Ovo će sačuvati narudžbinu u bazu i obrisati korpu.');">
+                        Potvrdi i Kreiraj Porudžbinu
+                    </button>
+                    @Html.ActionLink("Nazad na Korpu", "Korpa", null, new { @class = "btn btn-secondary" })
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
