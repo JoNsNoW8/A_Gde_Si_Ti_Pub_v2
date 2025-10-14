@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Moje Porudžbine</h2>
+<h2>Moje porudžbine</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -15,7 +15,7 @@
     <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
 }
 
-<p>Ovdje možete pregledati vašu istoriju porudžbina.</p>
+<p>Ovde možete pregledati vašu istoriju porudžbina.</p>
 
 @if (!Model.Any())
 {
@@ -30,9 +30,9 @@ else
             <tr>
                 <th>ID Porudžbine</th>
                 <th>Datum</th>
-                <th>Ukupna Cena</th>
+                <th>Ukupna cena</th>
                 <th>Status</th>
-                <th>Stavke (Proizvodi)</th>
+                <th>Proizvodi</th>
                 <th>Akcije</th>
             </tr>
         </thead>
@@ -42,7 +42,7 @@ else
                 <tr>
                     <td><strong>#@porudzbina.PorudzbinaId</strong></td>
                     <td>@porudzbina.Datum.ToString("dd.MM.yyyy HH:mm")</td>
-                    <td class="text-success">@porudzbina.UkupnaCena.ToString("C")</td>
+                    <td class="text-success">@($"{porudzbina.UkupnaCena:N2} RSD")</td>
                     <td>
                         <span class="badge badge-@(porudzbina.Status == "Obrada" ? "warning" : porudzbina.Status == "Poslato" ? "info" : "success")">
                             @porudzbina.Status
@@ -55,7 +55,7 @@ else
                                 @foreach (var deo in porudzbina.DeloviPorudzbine.Take(3)) // Show first 3
                                 {
                                     <li>
-                                        @deo.Proizvod?.Naziv (x@deo.Kolicina) - @deo.Cena.ToString("C") po kom
+                                        @deo.Proizvod.Naziv - @deo.Cena.ToString("N2") RSD po kom
                                     </li>
                                 }
                                 @if (porudzbina.DeloviPorudzbine.Count > 3)
@@ -71,15 +71,7 @@ else
                     </td>
                     <td>
                         <!-- Optional: Link to order details (add action/view later if needed) -->
-                        @Html.ActionLink("Detalji", "#", null, new { @class = "btn btn-info btn-sm", onclick = "alert('Detalji porudžbine u razvoju.'); return false;" }) <!-- Placeholder -->
-                        <!-- If you want delete for user (optional - usually admin only) -->
-                        <!-- @using (Html.BeginForm("ObrisiPorudzbinu", "Prodavnica", new { porudzbinaId = porudzbina.PorudzbinaId }, FormMethod.Post))
-                        {
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Sigurno obriši ovu porudžbinu?');">
-                                Obriši
-                            </button>
-                        } -->
+                        @Html.ActionLink("Detalji", "DetaljiPorudzbine", new { id = porudzbina.PorudzbinaId }, new { @class = "btn btn-info btn-sm" })
                     </td>
                 </tr>
             }
@@ -89,8 +81,8 @@ else
     <!-- Summary -->
     <div class="text-center mt-3">
         <p>Ukupno porudžbina: @Model.Count</p>
-        @Html.ActionLink("Nova Porudžbina", "Index", "Prodavnica", null, new { @class = "btn btn-primary" })
-        @Html.ActionLink("Moj Profil", "Profil", "Home", null, new { @class = "btn btn-secondary" })
+        @Html.ActionLink("Nova porudžbina", "Index", "Prodavnica", null, new { @class = "btn btn-primary" })
+        @Html.ActionLink("Moj profil", "Profil", "Home", null, new { @class = "btn btn-secondary" })
     </div>
 }
 

@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Upravljanje Ocenama</h2>
+<h2>Upravljanje ocenama</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -23,7 +23,7 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>Vrednost</th>
+            <th>Ocena</th>
             <th>Komentar</th>
             <th>Korisnik</th>
             <th>Proizvod</th>
@@ -38,9 +38,10 @@
                 <td>@ocena.OcenaId</td>
                 <td>@ocena.Vrednost / 5</td>
                 <td>@ocena.Komentar</td>
-                <td>@ocena.Korisnik?.Username</td>
+                <td>@(ocena.Korisnik != null ? ocena.Korisnik.Username : "Nepoznato")</td>
                 <td>@(ocena.ProizvodId.HasValue ? ocena.Proizvod?.Naziv : "Opšta ocena")</td>
                 <td>@ocena.Datum.ToShortDateString()</td>
+                <td>@Html.ActionLink("Obriši", "ObrisiOcenu", new { id = ocena.OcenaId }, new { @class = "btn btn-danger btn-sm", onclick = "return confirm('Sigurno želite da obrišete ocenu?');" })</td>
             </tr>
         }
     </tbody>

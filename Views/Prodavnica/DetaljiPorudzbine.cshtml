@@ -1,0 +1,95 @@
+﻿@model A_Gde_Si_Ti_Pub.Models.Porudzbina
+@{
+    ViewBag.Title = "Detalji Porudžbine";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Detalji porudžbine #@Model.PorudzbinaId</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+@if (TempData["WarningMessage"] != null)
+{
+<div class="alert alert-warning">@TempData["WarningMessage"]</div>
+}
+
+<div class="card">
+    <div class="card-header">
+        <h4>Osnovni podaci</h4>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">ID porudžbine:</dt>
+            <dd class="col-sm-9">@Model.PorudzbinaId</dd>
+
+            <dt class="col-sm-3">Datum:</dt>
+            <dd class="col-sm-9">@Model.Datum.ToString("dd.MM.yyyy HH:mm")</dd>
+
+            <dt class="col-sm-3">Ukupna cena:</dt>
+            <dd class="col-sm-9">@($"{Model.UkupnaCena:N2} RSD")</dd>
+
+            <dt class="col-sm-3">Status:</dt>
+            <dd class="col-sm-9">
+                <span style="color:black" class="badge badge-@(Model.Status == "Obrada" ? "warning" : Model.Status == "Poslato" ? "info" : "success")">
+                    @Model.Status
+                </span>
+            </dd>
+
+            <dt class="col-sm-3">Korisnik:</dt>
+            <dd class="col-sm-9">@Model.Korisnik.Username</dd>
+
+            <dt class="col-sm-3">Ime:</dt>
+            <dd class="col-sm-9">@Model.Ime</dd>
+
+            <dt class="col-sm-3">Prezime:</dt>
+            <dd class="col-sm-9">@Model.Prezime</dd>
+
+            <dt class="col-sm-3">Adresa:</dt>
+            <dd class="col-sm-9">@Model.Adresa</dd>
+
+            <dt class="col-sm-3">Email:</dt>
+            <dd class="col-sm-9">@Model.Email</dd>
+        </dl>
+    </div>
+</div>
+
+<h4>Stavke porudžbine</h4>
+@if (Model.DeloviPorudzbine != null && Model.DeloviPorudzbine.Any())
+{
+    <table class="table table-bordered table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Proizvod</th>
+                <th>Količina</th>
+                <th>Cena po komadu</th>
+                <th>Ukupna cena stavke</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var deo in Model.DeloviPorudzbine)
+            {
+                <tr>
+                    <td>@deo.Proizvod?.Naziv</td>
+                    <td>@deo.Kolicina</td>
+                    <td>@($"{deo.Cena:N2} RSD")</td>
+                    <td>@($"{(deo.Kolicina * deo.Cena):N2} RSD")</td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-warning">Nema stavki u ovoj porudžbini.</div>
+}
+
+<div class="text-center mt-4">
+    @Html.ActionLink("Nazad na Moje porudžbine", "MojeKupovine", null, new { @class = "btn btn-secondary" })
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

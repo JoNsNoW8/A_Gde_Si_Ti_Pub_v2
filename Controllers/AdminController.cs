@@ -147,6 +147,7 @@ namespace A_Gde_Si_Ti_Pub.Controllers
         }
 
         //CRUD za porudzbine
+        //prikaz porudzbinama, get akcija
         public ActionResult UpravljajPorudzbinama()
         {
             var porudzbina = db.Porudzbine
@@ -165,6 +166,42 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             db.SaveChanges();
             return RedirectToAction("Profil");
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UrediPorudzbinu(int porudzbinaId, string status)
+        {
+            if (!ModelState.IsValid)
+            {
+                // Reload list for error display
+                var porudzbine = db.Porudzbine
+                    .Include(p => p.Korisnik)
+                    .Include(p => p.DeloviPorudzbine.Select(dp => dp.Proizvod))
+                    .OrderByDescending(p => p.Datum)
+                    .ToList();
+                ViewBag.Error = "Nevažeći podaci. Pokušajte ponovo.";
+                return View("UpravljajPorudzbinama", porudzbine);  // Return to list with errors
+            }
+            try
+            {
+                // Load original entity by ID (like your product edit fix - prevents 0-rows error)
+                var porudzbina = db.Porudzbine.Find(porudzbinaId);
+                if (porudzbina == null)
+                {
+                    TempData["ErrorMessage"] = "Porudžbina nije pronađena (možda obrisana).";
+                    return RedirectToAction("UpravljajPorudzbinama");
+                }
+                
+                porudzbina.Status = status;
+                // Example: if you have DatumIsporuke, originalPorudzbina.DatumIsporuke = formPorudzbina.DatumIsporuke;
+                db.SaveChanges();  // EF updates only changed fields
+                TempData["SuccessMessage"] = $"Porudžbina #{porudzbinaId} ažurirana (Status: {porudzbina.Status}).";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Greška pri ažuriranju: " + ex.Message;
+            }
+            return RedirectToAction("UpravljajPorudzbinama");  // FIXED: Redirect to list (not Profil)
+        }
 
         public ActionResult ObrisiPorudzbinu(int porudzbinaId)
         {
@@ -174,7 +211,7 @@ namespace A_Gde_Si_Ti_Pub.Controllers
                 db.Porudzbine.Remove(porudzbina);
                 db.SaveChanges();
             }
-            return RedirectToAction("Profil", "Home");
+            return RedirectToAction("UpravljajPorudzbinama", "Admin");
         }
 
         //CRUD za ocene
@@ -186,18 +223,23 @@ namespace A_Gde_Si_Ti_Pub.Controllers
                 .ToList();
             return View(ocene);
         }
-        public ActionResult ObrisiOcenu(int ocenaId)
+        public ActionResult ObrisiOcenu(int id)
         {
-            var ocena = db.Ocene.Find(ocenaId);
-            if (ocena != null)
+            var ocena = db.Ocene.Find(id);
+            if (ocena == null)
+            {
+                TempData["ErrorMessage"] = "Ocena nije pronađen.";
+                return RedirectToAction("UpravljajOcenama");
+            }
+            try
             {
                 db.Ocene.Remove(ocena);
                 db.SaveChanges();
-                TempData["SuccessMessage"] = $"Ocena ID {ocenaId} obrisana!";
+                TempData["SuccessMessage"] = $"Ocena '{ocena.OcenaId}' obrisana!";
             }
-            else
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Ocena nije pronađena.";
+                TempData["ErrorMessage"] = "Greška pri brisanju: " + ex.Message;
             }
             return RedirectToAction("UpravljajOcenama");
         }
@@ -215,7 +257,23 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             if (korisnik != null)
             {
                 korisnik.IsActive = !korisnik.IsActive;
-                db.SaveChanges();
+                try
+                {
+                    db.SaveChanges();
+                }
+                catch (System.Data.Entity.Validation.DbEntityValidationException ex)
+                {
+                    foreach (var eve in ex.EntityValidationErrors)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Entity: {eve.Entry.Entity.GetType().Name}, State: {eve.Entry.State}");
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Property: {ve.PropertyName}, Error: {ve.ErrorMessage}");
+                        }
+                    }
+                    throw; // rethrow to see it in the debugger
+                }
+
                 TempData["SuccessMessage"] = $"Korisnik '{korisnik.Username}' {(korisnik.IsActive ? "aktivan" : "deaktiviran")}.";
             }
             return RedirectToAction("UpravljajKorisnicima");
@@ -223,6 +281,68 @@ namespace A_Gde_Si_Ti_Pub.Controllers
         public ActionResult KreirajKorisnika()
         {
             return View(new Korisnik());
+        }
+        public ActionResult ObrisiKorisnika(int id)
+        {
+            var korisnik = db.Korisnici.Find(id);
+            if (korisnik == null)
+            {
+                TempData["ErrorMessage"] = "Korisnik nije pronađen.";
+                return RedirectToAction("UpravljajKorisnicima");
+            }
+
+            try
+            {
+                db.Korisnici.Remove(korisnik);
+                db.SaveChanges();
+                TempData["SuccessMessage"] = $"Korisnik '{korisnik.Username}' obrisan!";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Greška pri brisanju: " + ex.Message;
+            }
+            return RedirectToAction("UpravljajKorisnicima");
+        }
+        public ActionResult IzmeniKorisnika(int id)
+        {
+            var korisnik = db.Korisnici.Find(id);
+            if (korisnik == null) return HttpNotFound("Korisnik nije pronadjen");
+            return View(korisnik);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult IzmeniKorisnika(Korisnik formKorisnik)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // NEW: Load the original entity from DB by ID (ensures it's attached)
+                    var originalKorisnik = db.Korisnici.Find(formKorisnik.KorisnikId);
+                    if (originalKorisnik == null)
+                    {
+                        return HttpNotFound("Korisnik nije pronađen. Možda je obrisan.");
+                    }
+                    originalKorisnik.Ime = formKorisnik.Ime;
+                    originalKorisnik.Username = formKorisnik.Username;
+                    originalKorisnik.Email = formKorisnik.Email;
+                    originalKorisnik.Uloga = formKorisnik.Uloga;
+                    originalKorisnik.IsActive = formKorisnik.IsActive;
+
+                    db.SaveChanges();
+                    TempData["SuccessMessage"] = $"Korisnik '{originalKorisnik.Ime}' uspešno izmenjen!";
+                    return RedirectToAction("UpravljajKorisnicima");
+                }
+                catch (Exception ex)
+                {
+
+                    ModelState.AddModelError("", $"Greška pri izmeni: {ex.Message}. Ako se ponavlja, proverite da li je korisnik još u bazi.");
+                    // Re-load for error display
+                    var errorKorisnik = db.Korisnici.Find(formKorisnik.KorisnikId);
+                    return View(errorKorisnik ?? formKorisnik);
+                }
+            }
+            return View(formKorisnik);
         }
 
         [HttpPost]
@@ -326,6 +446,7 @@ namespace A_Gde_Si_Ti_Pub.Controllers
 
             return View(noviAdmin);
         }
+      
 
         protected override void Dispose(bool disposing)
         {

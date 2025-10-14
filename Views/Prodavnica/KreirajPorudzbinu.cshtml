@@ -6,7 +6,7 @@
     decimal ukupnaCena = Model.UkupnaCena;
 }
 
-<h2>Kreirajte Porudžbinu</h2>
+<h2>Kreirajte porudžbinu</h2>
 
 @if (TempData["ErrorMessage"] != null)
 {
@@ -16,33 +16,33 @@
 <div class="row">
     <!-- Left: Cart Summary -->
     <div class="col-md-6">
-        <h4>Vaša Korpa (Pregled)</h4>
+        <h4>Vaša korpa (Pregled)</h4>
         @if (korpa != null && korpa.Any())
         {
             <table class="table table-bordered table-sm">
                 <thead>
                     <tr>
-                        <th>Proizvod</th>
-                        <th>Količina</th>
-                        <th>Cena</th>
-                        <th>Subtotal</th>
+                        <th class="text-center">Proizvod</th>
+                        <th class="text-center">Količina</th>
+                        <th class="text-center">Cena</th>
+                        <th class="text-center">Ukupna cena</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in korpa)
                     {
                         <tr>
-                            <td>@item.Proizvod?.Naziv</td>
-                            <td>@item.Kolicina</td>
-                            <td>@item.Cena.ToString("C")</td>
-                            <td>@item.Subtotal.ToString("C")</td>
+                            <td>@item.Proizvod.Naziv</td>
+                            <td class="text-center">@item.Kolicina</td>
+                            <td>@($"{item.Cena:N2} RSD")</td>
+                            <td>@($"{item.Subtotal:N2} RSD")</td>
                         </tr>
                     }
                 </tbody>
                 <tfoot>
                     <tr class="table-info">
                         <th colspan="3">Ukupno:</th>
-                        <th>@ukupnaCena.ToString("C")</th>
+                        <th>@($"{ukupnaCena:N2} RSD")</th>
                     </tr>
                 </tfoot>
             </table>
@@ -55,7 +55,7 @@
 
     <!-- Right: User Details Form -->
     <div class="col-md-6">
-        <h4>Detalji Dostave</h4>
+        <h4>Detalji dostave</h4>
         <p>Popunite vaše podatke za dostavu. Porudžbina će biti obrađena uskoro.</p>
 
         @using (Html.BeginForm("KreirajPorudzbinu", "Prodavnica", FormMethod.Post, new { @class = "form-horizontal" }))
@@ -105,14 +105,15 @@
             @Html.HiddenFor(m => m.UkupnaCena)
             @Html.HiddenFor(m => m.Status, new { value = "Obrada" })
 
-            <div class="form-group">
-                <div class="col-md-offset-3 col-md-9">
-                    <button type="submit" class="btn btn-success btn-lg" onclick="return confirm('Potvrdite porudžbinu? Ukupno: @ukupnaCena.ToString("C"). Ovo će sačuvati narudžbinu u bazu i obrisati korpu.');">
-                        Potvrdi i Kreiraj Porudžbinu
-                    </button>
-                    @Html.ActionLink("Nazad na Korpu", "Korpa", null, new { @class = "btn btn-secondary" })
-                </div>
-            </div>
+    <div class="form-group">
+        <div class="col-md-offset-3 col-md-9">
+            <button type="submit" class="btn btn-success btn-lg" onclick="return confirm('Potvrdite porudžbinu? Ukupno: @ukupnaCena.ToString("C"). Ovo će sačuvati narudžbinu u bazu i obrisati korpu.');">
+                Potvrdi porudžbinu
+            </button>
+        </div>
+        <br />
+        @Html.ActionLink("Nazad na Korpu", "Korpa", null, new { @class = "btn btn-secondary" })
+    </div>
         }
     </div>
 </div>

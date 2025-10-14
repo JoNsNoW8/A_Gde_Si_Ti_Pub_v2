@@ -5,7 +5,7 @@
     decimal ukupnaCena = ViewBag.UkupnaCena as decimal? ?? 0;
 }
 
-<h2>Vaša Korpa</h2>
+<h2>Vaša korpa</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -19,12 +19,12 @@
 @if (ViewBag.Message != null)
 {
     <div class="alert alert-info">@ViewBag.Message</div>
-    <p>@Html.ActionLink("Nastavi Kupovinu", "Index", "Prodavnica", null, new { @class = "btn btn-primary" })</p>
+    <p>@Html.ActionLink("Nastavi kupovinu", "Index", "Prodavnica", null, new { @class = "btn btn-primary" })</p>
 }
 else if (!Model.Any())
 {
     <div class="alert alert-info">Korpa je prazna.</div>
-    <p>@Html.ActionLink("Idi na Prodavnicu", "Index", "Prodavnica", null, new { @class = "btn btn-primary" })</p>
+    <p>@Html.ActionLink("Idi na prodavnicu", "Index", "Prodavnica", null, new { @class = "btn btn-primary" })</p>
 }
 else
 {
@@ -33,8 +33,8 @@ else
             <tr>
                 <th>Proizvod</th>
                 <th>Količina</th>
-                <th>Cena po Komadu</th>
-                <th>Subtotal</th>
+                <th>Cena po komadu</th>
+                <th>Ukupna cena</th>
                 <th>Akcije</th>
             </tr>
         </thead>
@@ -43,17 +43,17 @@ else
             {
                 <tr>
                     <td>
-                        <strong>@item.Proizvod?.Naziv</strong><br />
-                        <small><img src="@item.Proizvod?.Slika" alt="@item.Proizvod?.Naziv" style="width: 50px;" /></small>
+                        <strong>@item.Proizvod.Naziv</strong><br />
                     </td>
                     <td>
-                        <input type="number" id="kolicina-@item.ProizvodId" value="@item.Kolicina" min="1" class="form-control" style="width: 80px;" />
+                        <span class="d-inline-block text-center" style="width: 40px;">@item.Kolicina</span>
                     </td>
-                    <td>@item.Cena.ToString("C")</td>
-                    <td id="subtotal-@item.ProizvodId">@item.Subtotal.ToString("C")</td>
+                    <td>@($"{item.Cena:N2} RSD")</td>
+                    <td id="subtotal-@item.ProizvodId">@($"{item.Subtotal:N2} RSD")</td>
                     <td>
-                        <button class="btn btn-warning btn-sm" onclick="azurirajKolicinu(@item.ProizvodId)">Ažuriraj</button>
-                        <button class="btn btn-danger btn-sm" onclick="ukloniIzKorpe(@item.ProizvodId)">Ukloni</button>
+                        <button class="btn btn-danger btn-sm" onclick="ukloniIzKorpe(@item.ProizvodId)" id="ukloni-@item.ProizvodId">
+                            Ukloni
+                        </button>
                     </td>
                 </tr>
             }
@@ -61,7 +61,7 @@ else
         <tfoot>
             <tr class="table-info">
                 <th colspan="3">Ukupno:</th>
-                <th id="ukupno">@ukupnaCena.ToString("C")</th>
+                <th id="ukupno">@($"{ukupnaCena:N2} RSD")</th>
                 <th></th>
             </tr>
         </tfoot>
@@ -71,30 +71,60 @@ else
         @using (Html.BeginForm("KreirajPorudzbinu", "Prodavnica", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
-            <button type="submit" class="btn btn-success btn-lg" onclick="return confirm('Sigurno želite da kreirate porudžbinu? Ovo će sačuvati narudžbinu u bazu.')">
-                Kreiraj Porudžbinu (Ukupno: @ukupnaCena.ToString("C"))
+            <button type="submit" class="btn btn-success btn-lg">
+                Nastavi
             </button>
         }
-        @Html.ActionLink("Nastavi Kupovinu", "Index", "Prodavnica", null, new { @class = "btn btn-secondary" })
+        <br />
+        @Html.ActionLink("Nastavi kupovinu", "Index", "Prodavnica", null, new { @class = "btn btn-secondary" })
     </div>
 }
+@Html.AntiForgeryToken()
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <script>
-        function azurirajKolicinu(proizvodId) {
-            var kolicina = $('#kolicina-' + proizvodId).val();
-            $.post('@Url.Action("AzurirajKorpu", "Prodavnica")', { proizvodId: proizvodId, kolicina: kolicina }, function (data) {
+        let updateTimeout; // For debouncing input changes
+
+        // UPDATED: Auto-update on quantity input change (arrows, typing, blur)
+        function azurirajKolicinuNaPromenu(proizvodId) {
+            clearTimeout(updateTimeout); // Cancel previous timeout
+            updateTimeout = setTimeout(function() {
+                var kolicina = parseInt($('#kolicina-' + proizvodId).val()) || 1;
+                azurirajKolicinu(proizvodId, kolicina);
+            }, 500); // Wait 500ms after last change (debounce for arrows/typing)
+        }
+
+        // UPDATED: Core update function (handles AJAX, loading, success/error)
+
+        function azurirajKolicinu(proizvodId, kolicina) {
+            var btn = $('#ukloni-' + proizvodId); // Disable during request
+            btn.prop('disabled', true).text('Ažuriram...');
+
+            $.post('@Url.Action("AzurirajKorpu", "Prodavnica")',
+                {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
+                    proizvodId: proizvodId, kolicina: kolicina
+                }, function (data) {
+                btn.prop('disabled', false).text('Ukloni'); // Re-enable
+
                 if (data.success) {
-                    location.reload(); // Refresh to update totals
+                    // Success: Reload page to update subtotals/total (simple)
+                    location.reload();
                 } else {
-                    alert(data.message);
+                    alert(data.message || 'Greška pri ažuriranju korpe.');
+                    // Reset input if error
+                    $('#kolicina-' + proizvodId).val(data.subtotal > 0 ? (kolicina || 1) : 1);
                 }
+            }).fail(function() {
+                btn.prop('disabled', false).text('Ukloni');
+                alert('Greška u konekciji. Pokušajte ponovo.');
             });
         }
 
+        // UPDATED: Ukloni (calls update with 0)
         function ukloniIzKorpe(proizvodId) {
-            if (confirm('Sigurno ukloniti ovu stavku?')) {
+            if (confirm('Sigurno ukloniti ovu stavku iz korpe?')) {
                 azurirajKolicinu(proizvodId, 0);
             }
         }

@@ -1,0 +1,79 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "Meni";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Naš Meni - Pića</h2>
+    <p>Izaberite iz naše ponude pića u kafeu. Sva pića su pripremljena sa kvalitetnim sastojcima.</p>
+
+    <div class="row">
+        <!-- Hardcoded drinks - Add more as needed -->
+        @* Drink 1 *@
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="~/Content/Meni/espresso.jpg" class="card-img-top" alt="Espresso" style="height: 200px; object-fit: cover;" />
+                <div class="card-body">
+                    <h5 class="card-title">Espresso</h5>
+                    <p class="card-text">Klasično jako espresso piće sa intenzivnim ukusom.</p>
+                </div>
+            </div>
+        </div>
+
+        @* Drink 2 *@
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="~/Content/Meni/americano.jpg" class="card-img-top" alt="Americano" style="height: 200px; object-fit: cover;" />
+                <div class="card-body">
+                    <h5 class="card-title">Americano</h5>
+                    <p class="card-text">Espresso sa vrelom vodom za duži ukus.</p>
+                </div>
+            </div>
+        </div>
+
+        @* Drink 3 *@
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="~/Content/Meni/cappuccino.jpg" class="card-img-top" alt="Cappuccino" style="height: 200px; object-fit: cover;" />
+                <div class="card-body">
+                    <h5 class="card-title">Cappuccino</h5>
+                    <p class="card-text">Espresso sa mlekom i penom za kremast doživljaj.</p>
+                </div>
+            </div>
+        </div>
+
+        @* Drink 4 *@
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="~/Content/Meni/latte.jpg" class="card-img-top" alt="Latte" style="height: 200px; object-fit: cover;" />
+                <div class="card-body">
+                    <h5 class="card-title">Latte</h5>
+                    <p class="card-text">Blagi espresso sa više mleka za svakodnevnu razonodu.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="~/Content/Meni/limunada.jpg" class="card-img-top" alt="Limunada" style="height: 200px; object-fit: cover;" />
+                <div class="card-body">
+                    <h5 class="card-title">Limunada</h5>
+                    <p class="card-text">Limun + voda</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <img src="~/Content/Meni/narandza.jpg" class="card-img-top" alt="Narandza" style="height: 200px; object-fit: cover;" />
+                <div class="card-body">
+                    <h5 class="card-title">Ceđena narandža</h5>
+                    <p class="card-text">100% narandža</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

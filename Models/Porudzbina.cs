@@ -15,7 +15,7 @@ namespace A_Gde_Si_Ti_Pub.Models
         [StringLength(50)]
         public string Ime { get; set; }
 
-        [Required(ErrorMessage = "PRezime je obavezno.")]
+        [Required(ErrorMessage = "Prezime je obavezno.")]
         [StringLength(50)]
         public string Prezime { get; set; }
 

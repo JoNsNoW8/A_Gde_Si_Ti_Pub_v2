@@ -170,5 +170,72 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             ViewBag.CurrentUserId = korisnik.KorisnikId;
             return View(korisnik);
         }
+        // Add this at the top of HomeController.cs (inside the class)
+        private int TrenutniKupacId()
+        {
+            var customUser = User as CustomPrincipal;  // Cast to your custom type
+            if (customUser != null)
+            {
+                var username = customUser.Identity.Name;  // Get the username from the identity
+                var korisnik = db.Korisnici.FirstOrDefault(k => k.Username == username);  // Query DB for the user
+                if (korisnik != null)
+                {
+                    return korisnik.KorisnikId;  // Return the ID from the database
+                }
+                throw new Exception("Korisnik nije pronađen u bazi. Proverite korisnički nalog.");
+            }
+            throw new Exception("Korisnik nije autentifikovan. Proverite prijavu.");
+        }
+
+
+
+        [Authorize]  // Require login for both roles
+        public ActionResult IzmeniProfil()
+        {
+            var korisnikId = TrenutniKupacId();  // This now works
+            var korisnik = db.Korisnici.Find(korisnikId);
+            if (korisnik == null)
+            {
+                return HttpNotFound("Korisnik nije pronađen.");
+            }
+            return View(korisnik);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public ActionResult IzmeniProfil(Korisnik formKorisnik)  // Binds form data
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(formKorisnik);  // Return with errors
+            }
+
+            var customUser = User as CustomPrincipal;
+            var korisnikId  = TrenutniKupacId();  // From your existing method
+            var originalKorisnik = db.Korisnici.Find(korisnikId);  // Load original for security
+            if (originalKorisnik == null)
+            {
+                return HttpNotFound("Korisnik nije pronađen.");
+            }
+
+            // Update only editable fields (prevent changing Username, Uloga, etc.)
+            originalKorisnik.Ime = formKorisnik.Ime;
+            originalKorisnik.Email = formKorisnik.Email;
+            // Do NOT update: Username, Uloga, IsActive (for security)
+
+            try
+            {
+                db.SaveChanges();
+                TempData["SuccessMessage"] = "Profil uspešno ažuriran!";
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Greška pri ažuriranju profila: " + ex.Message);
+                return View(formKorisnik);  // Return with error
+            }
+
+            return RedirectToAction("Profil");  // Redirect back to profile view
+        }
     }
 }

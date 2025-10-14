@@ -214,6 +214,22 @@
     <Compile Include="Migrations\202510121622220_dupliranjeProizvoda.Designer.cs">
       <DependentUpon>202510121622220_dupliranjeProizvoda.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202510131537577_korisnikIme.cs" />
+    <Compile Include="Migrations\202510131537577_korisnikIme.Designer.cs">
+      <DependentUpon>202510131537577_korisnikIme.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510131622149_korisnikObaveznoIme.cs" />
+    <Compile Include="Migrations\202510131622149_korisnikObaveznoIme.Designer.cs">
+      <DependentUpon>202510131622149_korisnikObaveznoIme.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510140839491_gramatickaGreska.cs" />
+    <Compile Include="Migrations\202510140839491_gramatickaGreska.Designer.cs">
+      <DependentUpon>202510140839491_gramatickaGreska.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202510140855585_debugMojaKorpa.cs" />
+    <Compile Include="Migrations\202510140855585_debugMojaKorpa.Designer.cs">
+      <DependentUpon>202510140855585_debugMojaKorpa.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Admin.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -278,7 +294,6 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Nalozi\Login.cshtml" />
     <Content Include="Views\Nalozi\Registracija.cshtml" />
-    <Content Include="Views\Admin\Admin.cshtml" />
     <Content Include="Views\Home\Profil.cshtml" />
     <Content Include="Views\Prodavnica\Index.cshtml" />
     <Content Include="Views\Admin\UpravljajProizvodima.cshtml" />
@@ -292,6 +307,10 @@
     <Content Include="Views\Admin\UpravljajPorudzbinama.cshtml" />
     <Content Include="Views\Prodavnica\KreirajPorudzbinu.cshtml" />
     <Content Include="Views\Prodavnica\MojeKupovine.cshtml" />
+    <Content Include="Views\Admin\IzmeniKorisnika.cshtml" />
+    <Content Include="Views\Prodavnica\DetaljiPorudzbine.cshtml" />
+    <Content Include="Views\Home\IzmeniProfil.cshtml" />
+    <Content Include="Views\Home\Meni.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -371,6 +390,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202510121622220_dupliranjeProizvoda.resx">
       <DependentUpon>202510121622220_dupliranjeProizvoda.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510131537577_korisnikIme.resx">
+      <DependentUpon>202510131537577_korisnikIme.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510131622149_korisnikObaveznoIme.resx">
+      <DependentUpon>202510131622149_korisnikObaveznoIme.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510140839491_gramatickaGreska.resx">
+      <DependentUpon>202510140839491_gramatickaGreska.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510140855585_debugMojaKorpa.resx">
+      <DependentUpon>202510140855585_debugMojaKorpa.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

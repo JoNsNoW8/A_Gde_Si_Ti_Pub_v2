@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prijava - My ASP.NET Application</title>
+    <link href="/Content/bootstrap.css" rel="stylesheet"/>
+<link href="/Content/site.css" rel="stylesheet"/>
+
+    <script src="/Scripts/modernizr-2.8.3.js"></script>
+
+</head>
+<body>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">A gde si ti</a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
+                <ul class="navbar-nav flex-grow-1">
+                    <li><a class="nav-link" href="/">Počena</a></li>
+                    <li><a class="nav-link" href="/Prodavnica">Prodavnica</a></li>
+                    <li><a class="nav-link" href="/Meni/Meni">Meni</a></li>
+                    <li><a class="nav-link" href="/Home/About">O nama</a></li>
+                    <li><a class="nav-link" href="/Home/Contact">Kontakt</a></li>
+                        <li><a class="nav-link" href="/Nalozi/Login">Prijavi se</a></li>
+                        <li><a class="nav-link" href="/Nalozi/Registracija">Registruj se</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container body-content">
+        
+
+
+<h2>Prijava</h2>
+
+<form action="/Nalozi/Login" class="form-horizontal" method="post" role="form"><input name="__RequestVerificationToken" type="hidden" value="6b7Css-rHY2rDZbTNaC6NgoEo5I4FoY1BYUOy2MiOL2EMRS0mhyLGFxYf5VgRm-Q1edcXil0qkALTqK8uUAwomm5RTa-SthvxZoT1tjPQ4k1" />    <div class="form-group">
+        <label class="control-label col-md-2" for="Korisni_ko_ime">Korisničko ime</label>
+        <div class="col-md-10">
+            <input class="form-control" id="username" name="username" required="required" type="text" value="" />
+            <span class="field-validation-valid text-danger" data-valmsg-for="username" data-valmsg-replace="true"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="control-label col-md-2" for="Lozinka">Lozinka</label>
+        <div class="col-md-10">
+            <input class="form-control" id="password" name="password" required="required" type="password" />
+            <span class="field-validation-valid text-danger" data-valmsg-for="password" data-valmsg-replace="true"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="rememberMe" /> Zapamti me?
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Prijavi se" class="btn btn-primary" />
+        </div>
+    </div>
+    <p>
+        Nemate nalog? <a href="/Nalozi/Registracija">Registrujte se</a>
+    </p>
+</form>
+
+        <hr />
+        <footer>
+            <p>&copy; 2025 - My ASP.NET Application</p>
+        </footer>
+    </div>
+
+    <script src="/Scripts/jquery-3.7.0.js"></script>
+
+    <script src="/Scripts/bootstrap.js"></script>
+
+    
+    <script src="/Scripts/jquery.validate.js"></script>
+<script src="/Scripts/jquery.validate.unobtrusive.js"></script>
+
+
+</body>
+</html>

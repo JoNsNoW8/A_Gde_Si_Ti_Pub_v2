@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Upravljanje Proizvodima</h2>
+<h2>Upravljanje proizvodima</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -16,7 +16,7 @@
 }
 
 <p>
-    @Html.ActionLink("Dodaj Novi Proizvod", "DodajProizvod", null, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Dodaj novi proizvod", "DodajProizvod", null, new { @class = "btn btn-primary" })
 </p>
 
 <table class="table table-bordered table-striped">
@@ -26,8 +26,7 @@
             <th>Naziv</th>
             <th>Opis</th>
             <th>Cena</th>
-            <th>Slika</th>
-            <th>Status (Dostupan)</th>
+            <th>Status</th>
             <th>Akcije</th>
         </tr>
     </thead>
@@ -38,18 +37,7 @@
                 <td>@proizvod.ProizvodId</td>
                 <td>@proizvod.Naziv</td>
                 <td>@proizvod.Opis</td>
-                <td>@proizvod.Cena.ToString("C")</td>
-                <td>
-                    @if (!string.IsNullOrEmpty(proizvod.Slika))
-                    {
-                        <img src="@proizvod.Slika" alt="@proizvod.Naziv" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/50?text=Slika'" />
-                    }
-                    else
-                    {
-                        <span class="text-muted">Nema slike</span>
-                    }
-                </td>
-                <!-- <td><img src="@proizvod.Slika" alt="@proizvod.Naziv" style="width: 50px; height: 50px;" onerror="this.src='https://via.placeholder.com/50?text=Slika'" /></td>-->
+                <td>@($"{proizvod.Cena:N2} RSD")</td>
                 <td>@(proizvod.Status ? "Da" : "Ne")</td>
                 <td>
                     @Html.ActionLink("Izmeni", "IzmeniProizvod", new { id = proizvod.ProizvodId }, new { @class = "btn btn-warning btn-sm" })

@@ -4,6 +4,8 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Services.Description;
+using System.Web.UI.WebControls.WebParts;
 using A_Gde_Si_Ti_Pub.Models;
 using Microsoft.Ajax.Utilities;
 
@@ -95,39 +97,52 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             porudzbina.Datum = DateTime.Now;
             porudzbina.UkupnaCena = korpa.Sum(dp => dp.Cena * dp.Kolicina); // Recalculate
 
-            try
-            {
-                // Save main order
-                db.Porudzbine.Add(porudzbina);
-                db.SaveChanges(); // Gets PorudzbinaId
-                                  // Save order items
-                foreach (var deo in korpa)
+                try
                 {
-                    var proizvod = db.Proizvodi.Find(deo.ProizvodId);
-                    if (proizvod == null || !proizvod.Status)
+                    // Save main order
+                    db.Porudzbine.Add(porudzbina);
+                    db.SaveChanges(); // Gets PorudzbinaId
+                                      // Save order items
+                    foreach (var deo in korpa)
                     {
-                        ModelState.AddModelError("", "Proizvod nije dostupan.");
-                        db.Porudzbine.Remove(porudzbina); // Rollback
-                        db.SaveChanges();
-                        ViewBag.Korpa = korpa;
-                        return View(porudzbina);
+                        var proizvod = db.Proizvodi.Find(deo.ProizvodId);
+                        if (proizvod == null || !proizvod.Status)
+                        {
+                            ModelState.AddModelError("", "Proizvod nije dostupan.");
+                            db.Porudzbine.Remove(porudzbina); // Rollback
+                            db.SaveChanges();
+                            ViewBag.Korpa = korpa;
+                            return View(porudzbina);
+                        }
+                        deo.Proizvod = null; // Avoid EF trying to re-add product
+                        deo.PorudzbinaId = porudzbina.PorudzbinaId;
+                        db.DeloviPorudzbine.Add(deo);
                     }
-                    deo.PorudzbinaId = porudzbina.PorudzbinaId;
-                    db.DeloviPorudzbine.Add(deo);
-                }
-                db.SaveChanges();
-                // Clear cart after success
+                    db.SaveChanges();
+                System.Diagnostics.Debug.WriteLine($"Snimljena porudžbina ID: {porudzbina.PorudzbinaId}");
+
                 Session["Korpa"] = null;
-                TempData["SuccessMessage"] = $"Porudžbina #{porudzbina.PorudzbinaId} uspešno kreirana! Hvala na kupovini.";
-                return RedirectToAction("MojeKupovine"); // Or a success page
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", "Greška pri kreiranju porudžbine: " + ex.Message);
-                ViewBag.Korpa = korpa;
-                porudzbina.UkupnaCena = korpa.Sum(dp => dp.Cena * dp.Kolicina);
-                return View(porudzbina);
-            }
+                    TempData["SuccessMessage"] = $"Porudžbina #{porudzbina.PorudzbinaId} uspešno kreirana! Hvala na kupovini.";
+                    return RedirectToAction("MojeKupovine"); // Or a success page
+                }
+                catch (Exception ex)
+                {
+                    var message = ex.Message;
+                    var inner = ex.InnerException?.Message;
+                    var inner2 = ex.InnerException?.InnerException?.Message;
+
+                    System.Diagnostics.Debug.WriteLine("ERROR while saving order:");
+                    System.Diagnostics.Debug.WriteLine(message);
+                    System.Diagnostics.Debug.WriteLine(inner);
+                    System.Diagnostics.Debug.WriteLine(inner2);
+
+                    ModelState.AddModelError("", "Greška pri kreiranju porudžbine: " +
+                        (inner2 ?? inner ?? message));
+
+                    ViewBag.Korpa = korpa;
+                    return View(porudzbina);
+
+                }
         }
 
         public ActionResult Korpa()
@@ -151,6 +166,35 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             ViewBag.UkupnaCena = korpa.Sum(item => item.Subtotal); // Total for view
             return View(korpa);
         }
+        // NEW: GET - View details of a specific order (for the current user only)
+        [Authorize] // Require login
+        public ActionResult DetaljiPorudzbine(int id)
+        {
+            var customUser = User as CustomPrincipal;
+            if (customUser?.IsInRole("Korisnik") != true)
+            {
+                return RedirectToAction("Login", "Nalozi");
+            }
+
+            var korisnikId = TrenutniKupacId();
+            var porudzbina = db.Porudzbine
+                .Include(p => p.Korisnik)
+                .Include(p => p.DeloviPorudzbine.Select(dp => dp.Proizvod))
+                .FirstOrDefault(p => p.PorudzbinaId == id && p.KorisnikId == korisnikId);  // Ensure it's the user's order
+
+            if (porudzbina == null)
+            {
+                TempData["ErrorMessage"] = "Porudžbina nije pronađena ili nemate pristup.";
+                return RedirectToAction("MojeKupovine");
+            }
+            // NEW: Debug check for items (log if empty for future debugging)
+            if (!porudzbina.DeloviPorudzbine.Any())
+            {
+                System.Diagnostics.Debug.WriteLine($"Order ID {id} has no items. Possible save issue.");
+                TempData["WarningMessage"] = "Ova porudžbina nema stavki (kontaktirajte podršku ako ovo nije tačno).";
+            }
+            return View(porudzbina);  // Pass the order to the details view
+        }
 
         [HttpPost]
         [Authorize]
@@ -166,13 +210,13 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             var item = korpa.FirstOrDefault(i => i.ProizvodId == proizvodId);
             if (item != null)
             {
-                if (kolicina <= 0)
-                {
-                    korpa.Remove(item); // Remove if 0
+                if(kolicina <= 0)
+        {
+                    korpa.Remove(item);
                 }
                 else
                 {
-                    item.Kolicina = kolicina; // Update quantity
+                    item.Kolicina = Math.Max(1, kolicina);
                 }
                 Session["Korpa"] = korpa;
                 return Json(new { success = true, totalItems = korpa.Count, subtotal = item?.Subtotal ?? 0 });
@@ -236,7 +280,7 @@ namespace A_Gde_Si_Ti_Pub.Controllers
                 if (item != null) item.Kolicina += kolicina;
                 else korpa.Add(new DeloviPorudzbine { ProizvodId = proizvodId, Kolicina = kolicina, Cena = proizvod.Cena });
                 Session["Korpa"] = korpa;
-                TempData["SuccessMessage"] = $"Proizvod '{proizvod.Naziv}' dodat u korpu! ({korpa.Count} stavki ukupno.)";
+                TempData["SuccessMessage"] = $"Proizvod '{proizvod.Naziv}' dodat u korpu!";
             }
             else
             {

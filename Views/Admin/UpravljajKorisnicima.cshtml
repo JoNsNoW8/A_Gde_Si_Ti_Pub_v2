@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Upravljanje Korisnicima</h2>
+<h2>Upravljanje korisnicima</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -16,8 +16,8 @@
 }
 
 <p>
-    @Html.ActionLink("Dodaj Korisnika", "KreirajKorisnika", null, new { @class = "btn btn-success" })
-    @Html.ActionLink("Dodaj Admina", "KreirajAdmina", null, new { @class = "btn btn-warning" })
+    @Html.ActionLink("Dodaj korisnika", "KreirajKorisnika", null, new { @class = "btn btn-success" })
+    @Html.ActionLink("Dodaj administratora", "KreirajAdmina", null, new { @class = "btn btn-warning" })
     @Html.ActionLink("Nazad na početnu", "Index", "Home", null, new { @class = "btn btn-secondary" })
 </p>
 
@@ -25,7 +25,8 @@
     <thead>
         <tr>
             <th>ID</th>
-            <th>Korisničko Ime</th>
+            <th>Ime</th>
+            <th>Korisničko ime</th>
             <th>Email</th>
             <th>Uloga</th>
             <th>Aktivan</th>
@@ -37,6 +38,7 @@
         {
             <tr>
                 <td>@k.KorisnikId</td>
+                <td>@k.Ime</td>
                 <td>@k.Username</td>
                 <td>@k.Email</td>
                 <td>@k.Uloga</td>
@@ -48,8 +50,12 @@
                     }
                     else
                     {
-                        <span class="badge badge-danger">Admin (ne može se menjati)</span>
+                        <span style="color:black" class="badge badge-danger">Admin (ne može se menjati)</span>
                     }
+
+                    @Html.ActionLink("Izmeni", "IzmeniKorisnika", new { id = k.KorisnikId }, new { @class = "btn btn-warning btn-sm" })
+                    |
+                    @Html.ActionLink("Obriši", "ObrisiKorisnika", new { id = k.KorisnikId }, new { @class = "btn btn-danger btn-sm", onclick = "return confirm('Sigurno želite da obrišete korisnika " + k.Ime + "?');" })
                 </td>
             </tr>
         }

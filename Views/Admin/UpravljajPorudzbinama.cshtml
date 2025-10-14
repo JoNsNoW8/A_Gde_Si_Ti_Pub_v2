@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Upravljanje Porudžbinama (Sve)</h2>
+<h2>Upravljanje porudžbinama</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -28,15 +28,15 @@
 }
 else
 {
-    <table class="table table-bordered table-striped">
+    <table class="table table-bordered table-striped, text-center">
         <thead class="thead-dark">
             <tr>
                 <th>ID Porudžbine</th>
                 <th>Korisnik</th>
                 <th>Datum</th>
-                <th>Ukupna Cena</th>
+                <th>Ukupna cena</th>
                 <th>Status</th>
-                <th>Stavke (Proizvodi)</th>
+                <th>Proizvodi</th>
                 <th>Akcije</th>
             </tr>
         </thead>
@@ -47,9 +47,9 @@ else
                     <td><strong>@porudzbina.PorudzbinaId</strong></td>
                     <td>@(porudzbina.Korisnik?.Username ?? "Nepoznato")</td>
                     <td>@porudzbina.Datum.ToString("dd.MM.yyyy HH:mm")</td>
-                    <td class="text-success">@porudzbina.UkupnaCena.ToString("C")</td>
+                    <td class="text-success">@($"{porudzbina.UkupnaCena:N2} RSD")</td>
                     <td>
-                        <span class="badge badge-@(porudzbina.Status == "Obrada" ? "warning" : porudzbina.Status == "Poslato" ? "info" : "success")">
+                        <span style="color:black" class="badge badge-@(porudzbina.Status == "Obrada" ? "warning" : porudzbina.Status == "Poslato" ? "info" : "success")">
                             @porudzbina.Status
                         </span>
                     </td>
@@ -57,10 +57,10 @@ else
                         @if (porudzbina.DeloviPorudzbine != null && porudzbina.DeloviPorudzbine.Any())
                         {
                             <ul class="list-unstyled mb-0">
-                                @foreach (var deo in porudzbina.DeloviPorudzbine.Take(3)) // Show first 3 to avoid clutter
+                                @foreach (var deo in porudzbina.DeloviPorudzbine.Take(3)) //prikaz prva tri proizvoda
                                 {
                                     <li>
-                                        @deo.Proizvod?.Naziv (x@deo.Kolicina) - @deo.Cena.ToString("C") po kom
+                                        @deo.Proizvod.Naziv - @($"{deo.Cena:N2} RSD") po kom
                                     </li>
                                 }
                                 @if (porudzbina.DeloviPorudzbine.Count > 3)
@@ -75,10 +75,20 @@ else
                         }
                     </td>
                     <td>
-                        <!-- Edit Link (to your existing UpravljajPorudzbinama GET) -->
-                        @Html.ActionLink("Uredi", "UpravljajPorudzbinama", new { id = porudzbina.PorudzbinaId }, new { @class = "btn btn-warning btn-sm" })
+                        @using (Html.BeginForm("UrediPorudzbinu", "Admin", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.Hidden("porudzbinaId", porudzbina.PorudzbinaId) <!-- Ensures ID binds -->
 
-                        <!-- Delete Form (POST to your existing ObrisiPorudzbinu) -->
+                        <div class="input-group input-group-sm">
+                            @Html.DropDownList("status",
+                            new SelectList(new[] { "Obrada", "Poslato", "Isporučeno", "Otkazano" }, porudzbina.Status),
+                            new { @class = "form-control" })
+
+                            <button type="submit" class="btn btn-primary">Ažuriraj</button>
+                        </div>
+                        }
+                    <br />
                         @using (Html.BeginForm("ObrisiPorudzbinu", "Admin", new { porudzbinaId = porudzbina.PorudzbinaId }, FormMethod.Post))
                         {
                             @Html.AntiForgeryToken()

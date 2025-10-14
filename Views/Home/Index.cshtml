@@ -22,7 +22,7 @@
                                 <h5 class="card-title">@ocena.Vrednost / 5 Zvezdica</h5>
                                 <p class="card-text">@ocena.Komentar</p>
                                 <small class="text-muted">
-                                    Od: @ocena.Korisnik?.Username <br />
+                                    Od: @(ocena.Korisnik != null ? ocena.Korisnik.Username : "Nepoznato") <br />
                                     @if (ocena.ProizvodId.HasValue)
                                     {
                                         @:Za proizvod: @ocena.Proizvod?.Naziv <br />

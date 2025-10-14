@@ -9,6 +9,7 @@ namespace A_Gde_Si_Ti_Pub.Models
 {
     public class DeloviPorudzbine
     {
+        [Key]
         public int DeloviPorudzbineID { get; set; }
         [Required]
         public int PorudzbinaId { get; set; } // Strani kljuc za Porudzbina

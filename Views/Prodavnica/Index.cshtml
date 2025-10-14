@@ -59,20 +59,21 @@
                     <div class="card-body">
                         <h5 class="card-title">@proizvod.Naziv</h5>
                         <p class="card-text">@proizvod.Opis</p>
-                        <p class="text-primary h5">@proizvod.Cena.ToString("C")</p>
+                        <p class="text-primary h5">@($"{proizvod.Cena:N2} RSD")</p>
+
                     </div>
                     <div class="card-footer">
                         @if (MozeKorpa)
                         {
-                            using (Html.BeginForm("DodajUKorpu", "Prodavnica", FormMethod.Post))
-                            {
-                                @Html.AntiForgeryToken()
-                                @Html.Hidden("proizvodId", proizvod.ProizvodId)
-                                <div class="input-group">
-                                    <input type="number" name="kolicina" value="1" min="1" class="form-control" style="width: 80px;" />
-                                    <button type="submit" class="btn btn-success">Dodaj u Korpu</button>
-                                </div>
-                            }
+                                using (Html.BeginForm("DodajUKorpu", "Prodavnica", FormMethod.Post))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.Hidden("proizvodId", proizvod.ProizvodId)
+                                    <div class="input-group">
+                                        <input type="number" name="kolicina" value="1" min="1" step="1" class="form-control" style="width: 80px;" placeholder="Količina" />
+                                        <button type="submit" class="btn btn-success">Dodaj u Korpu</button>
+                                    </div>
+                                }
                         }
                         else
                         {   //neulogovan korisnik
@@ -90,13 +91,5 @@
     @if (Model.Count == 0)
     {
         <p>Nema dostupnih proizvoda. Vratite se kasnije!</p>
-    }
-    @if (MozeKorpa && (Session["Korpa"] as List<DeloviPorudzbine>)?.Any() == true)
-    {
-        <div class="text-center mt-4">
-            <a href="@Url.Action("KreirajPorudzbinu", "Prodavnica")" class="btn btn-info">
-                Pogledaj Korpu (@((Session["Korpa"] as List<DeloviPorudzbine>)?.Count ?? 0) stavki)
-            </a>
-        </div>
     }
 </div>

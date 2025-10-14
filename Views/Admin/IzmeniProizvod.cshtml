@@ -4,9 +4,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Dodaj Novi Proizvod</h2>
+<h2>Dodaj novi proizvod</h2>
 
-@using (Html.BeginForm("IzmeniProizvod", "Admin", new { id = Model.ProizvodId }, FormMethod.Post, new { @class = "form-horizontal", role = "form" })) // enctype for future file upload
+@using (Html.BeginForm("IzmeniProizvod", "Admin", new { id = Model.ProizvodId }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
@@ -40,7 +40,7 @@
     <div class="form-group">
         @Html.LabelFor(m => m.Slika, new { @class = "control-label col-md-2" })
         <div class="col-md-10">
-            @Html.TextBoxFor(m => m.Slika, new { @class = "form-control", placeholder = "Putanja do slike (npr. ~/Content/images/majica.jpg)" })
+            @Html.TextBoxFor(m => m.Slika, new { @class = "form-control", placeholder = "Putanja do slike (npr. ~/Content/Proizvodi/majica.jpg)" })
             @Html.ValidationMessageFor(m => m.Slika, "", new { @class = "text-danger" })
         </div>
     </div>

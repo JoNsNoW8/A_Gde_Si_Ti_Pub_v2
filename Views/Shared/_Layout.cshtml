@@ -19,7 +19,7 @@
                 <ul class="navbar-nav flex-grow-1">
                     <li>@Html.ActionLink("Počena", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                     <li>@Html.ActionLink("Prodavnica", "Index", "Prodavnica", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Meni", "Meni", "Meni", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Meni", "Meni", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                     <li>@Html.ActionLink("O nama", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                     <li>@Html.ActionLink("Kontakt", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                     @if (User.Identity.IsAuthenticated)
