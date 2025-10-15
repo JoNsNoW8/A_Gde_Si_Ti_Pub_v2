@@ -1,20 +1,49 @@
-﻿/* Set padding to keep content from hitting the edges */
-.body-content {
-    margin-top: 15px;
-    padding-left: 15px;
-    padding-right: 15px;
+﻿/* Set body background to #e5dfd3 */
+body {
+    font-family: 'fonnts.com-Lust-Didone-Display-', sans-serif;
+    background-color: #e5dfd3;  /* Light beige/tan color */
+    color: #333;  /* Dark text for readability */
+}
+/* Define the custom font */
+@font-face {
+    font-family: 'fonnts.com-Lust-Didone-Display-'; 
+    src: url('/Content/fontovi/fonnts.com-Lust-Didone-Display-.otf') format('opentype');  /* Path to your file */
+    font-weight: normal;
+    font-style: normal;
+}
+/* Nav bar background to #2d5a29 (dark green) */
+.navbar {
+    background-color: #2d5a29 !important;  /* !important to override Bootstrap */
+    color: #ffffff;  /* White text for contrast */
+}
+.navbar .navbar-brand, .navbar .nav-link {
+    color: #ffffff;  /* White for links and brand */
+}
+.navbar .nav-link:hover {
+    color: #e19bbd;  /* Highlight with #e19bbd on hover */
 }
 
-/* Override the default bootstrap behavior where horizontal description lists 
-   will truncate terms that are too long to fit in the left column 
-*/
-.dl-horizontal dt {
-    white-space: normal;
+/* Buttons and accents with #e19bbd (light pink/purple) */
+.btn-primary {
+    background-color: #e19bbd;  /* Use for primary buttons */
+    border-color: #e19bbd;
+    color: #ffffff;  /* White text */
+}
+.btn-primary:hover {
+    background-color: #2d5a29;  /* Dark green on hover for contrast */
+    border-color: #2d5a29;
 }
 
-/* Set width on the form input elements since they're 100% wide by default */
-input,
-select,
-textarea {
-    max-width: 280px;
+/* Optional: Style other elements if needed */
+a {
+    color: #2d5a29;  /* Links in dark green */
+}
+a:hover {
+    color: #e19bbd;  /* Hover to light pink */
+}
+
+/* Ensure cards and tables look good */
+.card {
+    background-color: #ffffff;  /* White cards for contrast on background */
+    border: 1px solid #e19bbd;  /* Border with your color */
 }

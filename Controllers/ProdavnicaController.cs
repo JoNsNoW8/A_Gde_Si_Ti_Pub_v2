@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
@@ -8,6 +9,7 @@ using System.Web.Services.Description;
 using System.Web.UI.WebControls.WebParts;
 using A_Gde_Si_Ti_Pub.Models;
 using Microsoft.Ajax.Utilities;
+using PayPal.Api;
 
 namespace A_Gde_Si_Ti_Pub.Controllers
 {
@@ -96,53 +98,116 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             porudzbina.Status = "Obrada"; // Default status
             porudzbina.Datum = DateTime.Now;
             porudzbina.UkupnaCena = korpa.Sum(dp => dp.Cena * dp.Kolicina); // Recalculate
+            DbContextTransaction transaction = null;
+            try
+            {
+                transaction = db.Database.BeginTransaction();
 
-                try
+                db.Porudzbine.Add(porudzbina);
+                db.SaveChanges();
+
+                foreach (var deo in korpa)
                 {
-                    // Save main order
-                    db.Porudzbine.Add(porudzbina);
-                    db.SaveChanges(); // Gets PorudzbinaId
-                                      // Save order items
-                    foreach (var deo in korpa)
+                    var proizvod = db.Proizvodi.Find(deo.ProizvodId);
+                    if (proizvod == null || !proizvod.Status)
                     {
-                        var proizvod = db.Proizvodi.Find(deo.ProizvodId);
-                        if (proizvod == null || !proizvod.Status)
-                        {
-                            ModelState.AddModelError("", "Proizvod nije dostupan.");
-                            db.Porudzbine.Remove(porudzbina); // Rollback
-                            db.SaveChanges();
-                            ViewBag.Korpa = korpa;
-                            return View(porudzbina);
-                        }
-                        deo.Proizvod = null; // Avoid EF trying to re-add product
-                        deo.PorudzbinaId = porudzbina.PorudzbinaId;
-                        db.DeloviPorudzbine.Add(deo);
+                        ModelState.AddModelError("", "Proizvod nije dostupan.");
+                        db.Porudzbine.Remove(porudzbina); // Rollback
+                        db.SaveChanges();
+                        ViewBag.Korpa = korpa;
+                        return View(porudzbina);
                     }
-                    db.SaveChanges();
-                System.Diagnostics.Debug.WriteLine($"Snimljena porudžbina ID: {porudzbina.PorudzbinaId}");
+                    deo.Proizvod = null; // Avoid EF trying to re-add product
+                    deo.PorudzbinaId = porudzbina.PorudzbinaId;
+                    db.DeloviPorudzbine.Add(deo);
+                }
 
+                db.SaveChanges();
                 Session["Korpa"] = null;
-                    TempData["SuccessMessage"] = $"Porudžbina #{porudzbina.PorudzbinaId} uspešno kreirana! Hvala na kupovini.";
-                    return RedirectToAction("MojeKupovine"); // Or a success page
-                }
-                catch (Exception ex)
+                TempData["SuccessMessage"] = $"Porudžbina #{porudzbina.PorudzbinaId} uspešno kreirana!";
+                transaction.Commit();
+
+                // NEW: Initiate PayPal payment
+                var payment = CreatePayPalPayment(porudzbina);  // Custom method below
+                return Redirect(payment.links.FirstOrDefault(x => x.rel == "approval_url")?.href);
+            }
+            catch (Exception ex)
+            {
+                var message = ex.Message;
+                var inner = ex.InnerException?.Message;
+                var inner2 = ex.InnerException?.InnerException?.Message;
+
+                System.Diagnostics.Debug.WriteLine("ERROR while saving order:");
+                System.Diagnostics.Debug.WriteLine(message);
+                System.Diagnostics.Debug.WriteLine(inner);
+                System.Diagnostics.Debug.WriteLine(inner2);
+
+                ModelState.AddModelError("", "Greška pri kreiranju porudžbine: " +
+                    (inner2 ?? inner ?? message));
+
+                ViewBag.Korpa = korpa;
+                return View(porudzbina);
+
+            }
+        }
+        private Payment CreatePayPalPayment(Porudzbina porudzbina)
+        {
+            var clientId = ConfigurationManager.AppSettings["PayPal:ClientId"];
+            var clientSecret = ConfigurationManager.AppSettings["PayPal:ClientSecret"];
+            var mode = ConfigurationManager.AppSettings["PayPal:Mode"];
+
+            System.Diagnostics.Debug.WriteLine("ClientId: " + clientId);  // Log for debugging
+            System.Diagnostics.Debug.WriteLine("ClientSecret: " + clientSecret);
+
+            if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret))
+            {
+                throw new Exception("PayPal credentials are missing in web.config. Please check your settings.");
+            }
+
+            var apiContext = new APIContext(new OAuthTokenCredential(clientId, clientSecret).GetAccessToken());
+            apiContext.Config = new Dictionary<string, string> { { "mode", mode } };  // e.g., "Sandbox"
+
+            var payment = new Payment()
+            {
+                intent = "sale",
+                payer = new Payer() { payment_method = "paypal" },
+                transactions = new List<Transaction>()
+        {
+            new Transaction()
+            {
+                amount = new Amount()
                 {
-                    var message = ex.Message;
-                    var inner = ex.InnerException?.Message;
-                    var inner2 = ex.InnerException?.InnerException?.Message;
-
-                    System.Diagnostics.Debug.WriteLine("ERROR while saving order:");
-                    System.Diagnostics.Debug.WriteLine(message);
-                    System.Diagnostics.Debug.WriteLine(inner);
-                    System.Diagnostics.Debug.WriteLine(inner2);
-
-                    ModelState.AddModelError("", "Greška pri kreiranju porudžbine: " +
-                        (inner2 ?? inner ?? message));
-
-                    ViewBag.Korpa = korpa;
-                    return View(porudzbina);
-
+                    currency = "USD",  // Change to your currency if needed
+                    total = porudzbina.UkupnaCena.ToString("F2")
+                },
+                description = "Porudžbina #" + porudzbina.PorudzbinaId
+            }
+        },
+                redirect_urls = new RedirectUrls()
+                {
+                    return_url = Url.Action("PaymentComplete", "Prodavnica", new { orderId = porudzbina.PorudzbinaId }, Request.Url.Scheme),
+                    cancel_url = Url.Action("PaymentCancelled", "Prodavnica", new { orderId = porudzbina.PorudzbinaId }, Request.Url.Scheme)
                 }
+            };
+
+            return payment.Create(apiContext);
+        }
+        public ActionResult PaymentComplete(int orderId)
+        {
+            // Handle successful payment (e.g., update order status to "Paid")
+            var order = db.Porudzbine.Find(orderId);
+            if (order != null)
+            {
+                order.Status = "Plaćeno";  // Update status
+                db.SaveChanges();
+                TempData["SuccessMessage"] = "Plaćanje uspešno!";
+            }
+            return RedirectToAction("MojeKupovine");
+        }
+        public ActionResult PaymentCancelled(int orderId)
+        {
+            TempData["ErrorMessage"] = "Plaćanje je otkazano.";
+            return RedirectToAction("MojeKupovine");
         }
 
         public ActionResult Korpa()

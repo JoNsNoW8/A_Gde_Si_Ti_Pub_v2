@@ -3,21 +3,31 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
-    @Styles.Render("~/Content/css")
+    <title>@ViewBag.Title - A Gde Si Ti Pub</title>
+
+    <!-- Bootstrap CSS (if not already included via bundles) -->
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Your custom CSS (load after Bootstrap to override) -->
+    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
+
+    @Styles.Render("~/Content/css")  @* If you have other styles *@
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm">
         <div class="container">
-            @Html.ActionLink("A gde si ti", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            <a href="@Url.Action("Index", "Home")" class="navbar-brand">
+                @* Updated line *@
+                <img src="@Url.Content("~/Content/logo.png")" alt="A gde si ti Logo" style="height: 40px;" />
+            </a>
             <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
-                    <li>@Html.ActionLink("Počena", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+                    <li>@Html.ActionLink("Početna", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                     <li>@Html.ActionLink("Prodavnica", "Index", "Prodavnica", new { area = "" }, new { @class = "nav-link" })</li>
                     <li>@Html.ActionLink("Meni", "Meni", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                     <li>@Html.ActionLink("O nama", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
@@ -29,12 +39,11 @@
                         {
                             <li>@Html.ActionLink("Korpa", "Korpa", "Prodavnica", null, new { @class = "nav-link" })</li>
                         }
-
                         <li>@Html.ActionLink("Profil", "Profil", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                         <li>@Html.ActionLink("Odjavi se", "Logout", "Nalozi", new { area = "" }, new { @class = "nav-link" })</li>
                     }
                     else
-                    {       //strukutra: view /action/view folder
+                    {
                         <li>@Html.ActionLink("Prijavi se", "Login", "Nalozi", new { area = "" }, new { @class = "nav-link" })</li>
                         <li>@Html.ActionLink("Registruj se", "Registracija", "Nalozi", new { area = "" }, new { @class = "nav-link" })</li>
                     }
@@ -45,8 +54,8 @@
     <div class="container body-content">
         @RenderBody()
         <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+        <footer class="text-center py-3">
+            <p>&copy; @DateTime.Now.Year - A Gde Si Ti Pub</p>
         </footer>
     </div>
 
