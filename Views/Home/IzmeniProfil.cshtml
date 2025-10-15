@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Izmeni profil</h2>
+<h2 class="naslov">Izmeni profil</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -15,7 +15,7 @@
     <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
 }
 
-<p>Ovde možete ažurirati vaše podatke.</p>
+<p class="podnaslov">Ovde možete ažurirati vaše podatke.</p>
 
 @using (Html.BeginForm("IzmeniProfil", "Home", FormMethod.Post, new { @class = "form-horizontal" }))
 {
@@ -41,7 +41,7 @@
             @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
         </div>
     </div>
-
+    <br />
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
             <button type="submit" class="btn btn-success">Sačuvaj Izmene</button>

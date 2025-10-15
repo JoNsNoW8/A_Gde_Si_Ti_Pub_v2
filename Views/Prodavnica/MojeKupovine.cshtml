@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Moje porudžbine</h2>
+<h2 class="naslov">Moje porudžbine</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -15,7 +15,7 @@
     <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
 }
 
-<p>Ovde možete pregledati vašu istoriju porudžbina.</p>
+<p class="podnaslov">Ovde možete pregledati vašu istoriju porudžbina.</p>
 
 @if (!Model.Any())
 {
@@ -25,7 +25,7 @@
 }
 else
 {
-    <table class="table table-bordered table-striped">
+    <table class="table table-bordered table-striped proizvod">
         <thead class="thead-dark">
             <tr>
                 <th>ID Porudžbine</th>
@@ -44,7 +44,7 @@ else
                     <td>@porudzbina.Datum.ToString("dd.MM.yyyy HH:mm")</td>
                     <td class="text-success">@($"{porudzbina.UkupnaCena:N2} RSD")</td>
                     <td>
-                        <span class="badge badge-@(porudzbina.Status == "Obrada" ? "warning" : porudzbina.Status == "Poslato" ? "info" : "success")">
+                        <span style="color:black" class="badge badge-@(porudzbina.Status == "Obrada" ? "warning" : porudzbina.Status == "Poslato" ? "info" : "success")">
                             @porudzbina.Status
                         </span>
                     </td>
@@ -71,7 +71,7 @@ else
                     </td>
                     <td>
                         <!-- Optional: Link to order details (add action/view later if needed) -->
-                        @Html.ActionLink("Detalji", "DetaljiPorudzbine", new { id = porudzbina.PorudzbinaId }, new { @class = "btn btn-info btn-sm" })
+                        @Html.ActionLink("Detalji", "DetaljiPorudzbine", new { id = porudzbina.PorudzbinaId }, new { @class = "btn btn-info btn-sm proizvod" })
                     </td>
                 </tr>
             }
@@ -80,9 +80,9 @@ else
 
     <!-- Summary -->
     <div class="text-center mt-3">
-        <p>Ukupno porudžbina: @Model.Count</p>
-        @Html.ActionLink("Nova porudžbina", "Index", "Prodavnica", null, new { @class = "btn btn-primary" })
-        @Html.ActionLink("Moj profil", "Profil", "Home", null, new { @class = "btn btn-secondary" })
+        <p class="proizvod">Ukupno porudžbina: @Model.Count</p>
+        @Html.ActionLink("Nova porudžbina", "Index", "Prodavnica", null, new { @class = "btn btn-primary proizvod" })
+        @Html.ActionLink("Moj profil", "Profil", "Home", null, new { @class = "btn btn-secondary proizvod" })
     </div>
 }
 

@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Detalji porudžbine #@Model.PorudzbinaId</h2>
+<h2 class="naslov">Detalji porudžbine #@Model.PorudzbinaId</h2>
 
 @if (TempData["ErrorMessage"] != null)
 {
@@ -15,11 +15,11 @@
 <div class="alert alert-warning">@TempData["WarningMessage"]</div>
 }
 
-<div class="card">
+<div class="card proizvod">
     <div class="card-header">
         <h4>Osnovni podaci</h4>
     </div>
-    <div class="card-body">
+    <div class="card-body proizvod">
         <dl class="row">
             <dt class="col-sm-3">ID porudžbine:</dt>
             <dd class="col-sm-9">@Model.PorudzbinaId</dd>
@@ -55,10 +55,11 @@
     </div>
 </div>
 
+<br />
 <h4>Stavke porudžbine</h4>
 @if (Model.DeloviPorudzbine != null && Model.DeloviPorudzbine.Any())
 {
-    <table class="table table-bordered table-striped mt-3">
+    <table class="table table-bordered table-striped mt-3 proizvod">
         <thead>
             <tr>
                 <th>Proizvod</th>
@@ -71,7 +72,7 @@
             @foreach (var deo in Model.DeloviPorudzbine)
             {
                 <tr>
-                    <td>@deo.Proizvod?.Naziv</td>
+                    <td>@deo.Proizvod.Naziv</td>
                     <td>@deo.Kolicina</td>
                     <td>@($"{deo.Cena:N2} RSD")</td>
                     <td>@($"{(deo.Kolicina * deo.Cena):N2} RSD")</td>
@@ -87,7 +88,7 @@ else
 }
 
 <div class="text-center mt-4">
-    @Html.ActionLink("Nazad na Moje porudžbine", "MojeKupovine", null, new { @class = "btn btn-secondary" })
+    @Html.ActionLink("Nazad na Moje porudžbine", "MojeKupovine", null, new { @class = "btn btn-secondary proizvod" })
 </div>
 
 @section Scripts {

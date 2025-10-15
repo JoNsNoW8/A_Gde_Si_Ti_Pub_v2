@@ -4,9 +4,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Kreiraj novog administratora</h2>
+<h2 class="naslov">Kreiraj novog administratora</h2>
 
-<p>Ovaj nalog će imati puna administrator prava. Koristite odgovorno.</p>
+<p class="podnaslov">Ovaj nalog će imati puna administrator prava. Koristite odgovorno.</p>
 
 @using (Html.BeginForm("KreirajAdmina", "Admin", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {

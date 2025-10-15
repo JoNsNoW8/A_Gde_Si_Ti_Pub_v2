@@ -6,7 +6,7 @@
     decimal ukupnaCena = Model.UkupnaCena;
 }
 
-<h2>Kreirajte porudžbinu</h2>
+<h2 class="naslov">Kreirajte porudžbinu</h2>
 
 @if (TempData["ErrorMessage"] != null)
 {
@@ -16,16 +16,16 @@
 <div class="row">
     <!-- Left: Cart Summary -->
     <div class="col-md-6">
-        <h4>Vaša korpa (Pregled)</h4>
+        <h4 class="podnaslov">Vaša korpa (Pregled)</h4>
         @if (korpa != null && korpa.Any())
         {
             <table class="table table-bordered table-sm">
                 <thead>
                     <tr>
-                        <th class="text-center">Proizvod</th>
+                        <th>Proizvod</th>
                         <th class="text-center">Količina</th>
-                        <th class="text-center">Cena</th>
-                        <th class="text-center">Ukupna cena</th>
+                        <th>Cena</th>
+                        <th>Ukupna cena</th>
                     </tr>
                 </thead>
                 <tbody>

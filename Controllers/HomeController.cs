@@ -135,7 +135,6 @@ namespace A_Gde_Si_Ti_Pub.Controllers
         }
         public ActionResult About()
         {
-            ViewBag.Message = "O nama, cekamo Ogija da napise";
 
             return View();
         }

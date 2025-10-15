@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Dodaj novi proizvod</h2>
+<h2 class="naslov">Izmeni proizvod</h2>
 
 @using (Html.BeginForm("IzmeniProizvod", "Admin", new { id = Model.ProizvodId }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {

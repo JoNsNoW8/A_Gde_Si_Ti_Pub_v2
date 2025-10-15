@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Dodaj novog korisnika</h2>
+<h2 class="naslov">Dodaj novog korisnika</h2>
 
 @using (Html.BeginForm("IzmeniKorisnika", "Admin", new { id = Model.KorisnikId }, FormMethod.Post, new { @class = "form-horizontal", role = "form" })) // enctype for future file upload
 {

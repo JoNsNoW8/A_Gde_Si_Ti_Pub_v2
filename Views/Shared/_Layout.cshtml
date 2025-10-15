@@ -11,15 +11,14 @@
     <!-- Your custom CSS (load after Bootstrap to override) -->
     <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
 
-    @Styles.Render("~/Content/css")  @* If you have other styles *@
+    @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm">
         <div class="container">
             <a href="@Url.Action("Index", "Home")" class="navbar-brand">
-                @* Updated line *@
-                <img src="@Url.Content("~/Content/logo.png")" alt="A gde si ti Logo" style="height: 40px;" />
+                <img src="@Url.Content("~/Content/logo.png")" alt="A gde si ti Logo" />
             </a>
             <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -32,6 +31,7 @@
                     <li>@Html.ActionLink("Meni", "Meni", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                     <li>@Html.ActionLink("O nama", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                     <li>@Html.ActionLink("Kontakt", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+
                     @if (User.Identity.IsAuthenticated)
                     {
                         var customUser = User as A_Gde_Si_Ti_Pub.Models.CustomPrincipal;
@@ -40,17 +40,25 @@
                             <li>@Html.ActionLink("Korpa", "Korpa", "Prodavnica", null, new { @class = "nav-link" })</li>
                         }
                         <li>@Html.ActionLink("Profil", "Profil", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                        <li>@Html.ActionLink("Odjavi se", "Logout", "Nalozi", new { area = "" }, new { @class = "nav-link" })</li>
+                    }
+                </ul>
+                <!-- Right side auth links -->
+                <ul class="navbar-nav auth-links">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li>@Html.ActionLink("Odjavi se", "Logout", "Nalozi", null, new { @class = "nav-link nav-item" })</li>
                     }
                     else
                     {
-                        <li>@Html.ActionLink("Prijavi se", "Login", "Nalozi", new { area = "" }, new { @class = "nav-link" })</li>
-                        <li>@Html.ActionLink("Registruj se", "Registracija", "Nalozi", new { area = "" }, new { @class = "nav-link" })</li>
+                        <li>@Html.ActionLink("Prijavi se", "Login", "Nalozi", null, new { @class = "nav-link nav-item" })</li>
+                        <li>@Html.ActionLink("Registruj se", "Registracija", "Nalozi", null, new { @class = "nav-link nav-item" })</li>
                     }
                 </ul>
             </div>
         </div>
     </nav>
+
+    <!--Footer-->
     <div class="container body-content">
         @RenderBody()
         <hr />
