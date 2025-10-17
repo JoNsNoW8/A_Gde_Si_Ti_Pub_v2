@@ -56,6 +56,118 @@ body {
 .navbar-nav.auth-links {
     margin-left: auto;
 }
+/* ============================
+   ABOUT PAGE STYLING
+   ============================ */
+.about-page {
+    font-size: 1.35rem;       /* Larger, easy to read */
+    line-height: 1.8;
+    color: #2d2d2d;
+    font-family: 'obican_tekst', sans-serif;
+}
+
+.about-section {
+    margin-bottom: 4rem;
+}
+
+.about-section p {
+    margin-bottom: 1.2rem;
+    text-align: justify;
+}
+
+.about-img {
+    border-radius: 1rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.about-img:hover {
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+}
+
+.about-page h2.naslov {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #2d5a29;
+}
+
+.about-page h3.podnaslov {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #e19bbd;
+}
+
+/* ============================
+   CONTACT PAGE STYLING
+   ============================ */
+.contact-page {
+    font-family: 'obican_tekst', sans-serif;
+    font-size: 1.3rem;
+    line-height: 1.8;
+    color: #432d00;
+    background-color: #e5dfd3;
+    padding-bottom: 4rem;
+}
+
+.contact-page .naslov {
+    font-size: 3rem;
+    color: #2d5a29;
+    font-weight: 700;
+}
+
+.contact-page .podnaslov {
+    font-size: 2rem;
+    color: #e19bbd;
+    font-weight: 600;
+}
+
+.kontakt {
+    font-size: 1.4rem;
+    line-height: 1.9;
+    color: #2d5a29;
+}
+
+.kontakt-link {
+    color: #e19bbd;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.kontakt-link:hover {
+    color: #2d5a29;
+    text-decoration: underline;
+}
+
+.map-responsive {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 ratio */
+    height: 0;
+    overflow: hidden;
+    border-radius: 1rem;
+}
+
+.map-responsive iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 1rem;
+}
+
+.opis {
+    margin-top: 3rem;
+    font-size: 1.4rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    color: #432d00;
+}
+
+.opis strong {
+    color: #2d5a29;
+}
 
 
 /* Hover and active effects */

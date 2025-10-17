@@ -6,20 +6,26 @@
 }
 
 
-<!-- HEADER / HERO -->
+<p class="pocetna" style="padding-top:40px; text-align:center;">Dobrodošao u mesto gde se ne gleda u telefon nego u ljude!</p>
 <header class="py-5 bg-image-full"
         style="background-image: url('https://source.unsplash.com/wfh8dDlNFOk/1500x800')">
     <div class="text-center my-5">
         <img class="img-fluid rounded-circle mb-4" src="~/Content/pozadina.jpg" alt="Background image" />
-        <h1 class="pocetna">Dobrodošli u našu prodavnicu</h1>
-        <p class="pocetna">Kvalitetne komponente i sjajne cene</p>
+        
+        <p class="pocetna">
+            Kod nas se priča, smeje, igra i zaboravi na “sutra imam obaveze”.
+        </p>
+        <div class="podnaslov">
+            Mi smo A gde si ti — pab koji postoji jer svima fali ono “ajde da se okupimo”.
+            Ako si došao da pobegneš od gužve, možda si pogrešio mesto — jer ovde tek kreće prava gužva, ali ona dobra.
+            Pikado, društvene igre, priče koje prerastu u prijateljstva, i atmosfera zbog koje ne pitaš “kad ćemo opet”, nego “što nismo češće”
+        </div>
     </div>
 </header>
 
-<!-- REVIEWS SECTION -->
 <section class="py-5">
     <div class="container my-5">
-        <h2 class="text-center mb-4">Šta naši kupci kažu o nama</h2>
+        <h2 class="text-center mb-4">Šta kažu o nama</h2>
 
         <div id="reviewsSection">
             @if (ocene != null && ocene.Any())
@@ -64,7 +70,7 @@
         {
             <div id="addReviewForm" style="display: none;" class="mt-4">
                 <h3>Dodaj Ocenu</h3>
-                @using (Html.BeginForm("AddReview", "Home", FormMethod.Post, new { @class = "form-horizontal" }))
+                @using (Html.BeginForm("OstaviOcenu", "Home", FormMethod.Post, new { @class = "form-horizontal" }))
                 {
                     @Html.AntiForgeryToken()
                     @Html.ValidationSummary(true, "", new { @class = "text-danger" })

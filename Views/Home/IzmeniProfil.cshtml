@@ -21,10 +21,10 @@
 {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    @Html.HiddenFor(m => m.KorisnikId) @* Hidden to preserve ID *@
-    @Html.HiddenFor(m => m.Username) @* Hidden, not editable *@
-    @Html.HiddenFor(m => m.Uloga) @* Hidden, not editable *@
-    @Html.HiddenFor(m => m.IsActive) @* Hidden, not editable *@
+    @Html.HiddenFor(m => m.KorisnikId)
+    @Html.HiddenFor(m => m.Username) 
+    @Html.HiddenFor(m => m.Uloga) 
+    @Html.HiddenFor(m => m.IsActive) 
 
     <div class="form-group">
         @Html.LabelFor(m => m.Ime, new { @class = "control-label col-md-2" })

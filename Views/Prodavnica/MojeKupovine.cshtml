@@ -52,7 +52,7 @@ else
                         @if (porudzbina.DeloviPorudzbine != null && porudzbina.DeloviPorudzbine.Any())
                         {
                             <ul class="list-unstyled mb-0">
-                                @foreach (var deo in porudzbina.DeloviPorudzbine.Take(3)) // Show first 3
+                                @foreach (var deo in porudzbina.DeloviPorudzbine.Take(3))
                                 {
                                     <li>
                                         @deo.Proizvod.Naziv - @deo.Cena.ToString("N2") RSD po kom
@@ -70,7 +70,6 @@ else
                         }
                     </td>
                     <td>
-                        <!-- Optional: Link to order details (add action/view later if needed) -->
                         @Html.ActionLink("Detalji", "DetaljiPorudzbine", new { id = porudzbina.PorudzbinaId }, new { @class = "btn btn-info btn-sm proizvod" })
                     </td>
                 </tr>
@@ -78,7 +77,6 @@ else
         </tbody>
     </table>
 
-    <!-- Summary -->
     <div class="text-center mt-3">
         <p class="proizvod">Ukupno porudžbina: @Model.Count</p>
         @Html.ActionLink("Nova porudžbina", "Index", "Prodavnica", null, new { @class = "btn btn-primary proizvod" })
@@ -88,5 +86,4 @@ else
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-    <!-- No additional JS needed -->
 }

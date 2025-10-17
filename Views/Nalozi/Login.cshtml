@@ -9,6 +9,7 @@
 @using (Html.BeginForm("Login", "Nalozi", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @Html.AntiForgeryToken()
+    @Html.Hidden("returnUrl", (string)ViewBag.ReturnUrl)
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
     <div class="form-group">

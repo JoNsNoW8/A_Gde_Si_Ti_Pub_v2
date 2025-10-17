@@ -1,25 +1,58 @@
 ﻿@{
-    ViewBag.Title = "About";
+    ViewBag.Title = "O nama";
 }
-<main aria-labelledby="title">
-    <h2 id="title" class="naslov">O nama</h2>
-    <h3>Kafic sa dusom</h3>
+<main class="about-page container py-5">
+    <h2 style="font-size:40px" class=" text-center mb-5">O nama</h2>
 
-    <p class="onama">
-        Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-        Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown
-        printer took a galley of type and scrambled it to make a type specimen book. It has survived not only
-        five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
-        It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages,
-        and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum
-    </p>
-    <p>
-        Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-        Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown
-        printer took a galley of type and scrambled it to make a type specimen book. It has survived not only
-        five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.
-        It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages,
-        and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum
-    </p>
-    <img src="~/Content/ogi.jpg" />
+    <div class="about-section row align-items-center mb-5">
+        <div class="col-md-6">
+            <img src="~/Content/slika1.jpg" alt="Unutrašnjost paba" class="img-fluid rounded shadow about-img" />
+        </div>
+        <div class="col-md-6">
+            <h3 style="font-size:50px" class="mb-3">Kafić sa dušom</h3>
+            <p style="font-size:20px">
+                Nismo samo pab. Mi smo produžetak tvoje dnevne sobe — samo s boljim pivom i više smeha.
+                Kod nas su stolovi za igranje, razgovor i upoznavanje.
+            </p>
+            <p style="font-size:20px">
+                Neko dođe da pobedi u Codenames, neko da pobegne od notifikacija, neko da sretne nekog novog.
+                Svi odu puniji nego što su došli — i ne mislimo samo na čaše.
+            </p>
+        </div>
+    </div>
+
+    <div class="about-section row align-items-center mb-5 flex-row-reverse">
+        <div class="col-md-6">
+            <img src="~/Content/slika2.jpg" alt="Društvene igre" class="img-fluid rounded shadow about-img" />
+        </div>
+        <div class="col-md-6">
+            <p style="font-size:20px">
+                Ovde se ne igra da bi se pobedilo, nego da bi se povezalo. Bacanje kockice je izgovor da progovoriš sa neznancem.
+            </p>
+            <p style="font-size:20px">
+                Imamo igre koje pale razgovore, kvizove koji dižu ego (ili ga spuste), i turnire koji završe u novim ekipama.
+                Ako ne znaš pravila — naučićeš. Ako znaš — naučićeš nekog drugog.
+            </p>
+            <p style="font-size:20px">
+                Zato, ajde — gde si ti?
+            </p>
+        </div>
+    </div>
+
+    <div class="about-section row align-items-center mb-5">
+        <div class="col-md-6">
+            <img src="~/Content/proba.jpg" alt="Kviz veče" class="img-fluid rounded shadow about-img" />
+        </div>
+        <div class="col-md-6">
+            <p style="font-size:20px">
+                Kod nas se stalno nešto dešava — kvizovi, večeri društvenih igara, karaoke, tematske žurke i “Ogizona meet-upi”.
+            </p>
+            <p style="font-size:20px">
+                Ako želiš da samo sediš — može. Ako želiš da nešto pokreneš — još bolje.
+            </p>
+            <p style="font-size:20px">
+                Sve što treba da poneseš je dobro raspoloženje i bar jedan “ajde”.
+            </p>
+        </div>
+    </div>
 </main>

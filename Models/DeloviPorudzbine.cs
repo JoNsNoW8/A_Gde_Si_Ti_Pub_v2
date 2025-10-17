@@ -18,11 +18,10 @@ namespace A_Gde_Si_Ti_Pub.Models
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "Porudzbina mora sadrzati barem 1 proizvod.")]
         public int Kolicina { get; set; } = 1;
-        public decimal Cena { get; set; } // Price at time of order (snapshot)
+        public decimal Cena { get; set; }
         public decimal Subtotal => Kolicina * Cena;
-        // Navigation Properties (for EF relationships)
-        public virtual Porudzbina Porudzbina { get; set; } // Back-reference to parent order
-        public virtual Proizvod Proizvod { get; set; } // Reference to the product
+        public virtual Porudzbina Porudzbina { get; set; } 
+        public virtual Proizvod Proizvod { get; set; }
     }
 
 }

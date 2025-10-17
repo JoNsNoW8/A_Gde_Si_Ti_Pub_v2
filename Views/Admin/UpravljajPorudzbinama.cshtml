@@ -78,7 +78,7 @@ else
                         @using (Html.BeginForm("UrediPorudzbinu", "Admin", FormMethod.Post))
                         {
                             @Html.AntiForgeryToken()
-                            @Html.Hidden("porudzbinaId", porudzbina.PorudzbinaId) <!-- Ensures ID binds -->
+                            @Html.Hidden("porudzbinaId", porudzbina.PorudzbinaId)
 
                         <div class="input-group input-group-sm">
                             @Html.DropDownList("status",
@@ -102,7 +102,6 @@ else
         </tbody>
     </table>
 
-    <!-- Optional: Pagination or summary if many orders -->
     <div class="text-center mt-3">
         <p>Ukupno porudžbina: @Model.Count</p>
     </div>
@@ -110,5 +109,4 @@ else
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-    <!-- No additional JS needed; confirm() is native -->
 }

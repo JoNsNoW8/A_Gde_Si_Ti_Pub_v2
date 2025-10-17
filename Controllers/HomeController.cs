@@ -15,34 +15,23 @@ namespace A_Gde_Si_Ti_Pub.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
         public ActionResult Index()
         {
-            // Load latest 5 approved reviews (general or product-based)
             var ocene = db.Ocene
                 .Include(o => o.Korisnik)
-                .Include(o => o.Proizvod) // Optional load
+                .Include(o => o.Proizvod)
                 .OrderByDescending(o => o.Datum)
                 .Take(5)
                 .ToList();
-            ViewBag.Ocene = ocene; // Pass to view
-            ViewBag.IsAuthenticated = User.Identity.IsAuthenticated; // For conditional rendering
-            ViewBag.CurrentUserId = GetCurrentUserId(); // For form pre-fill if needed
-            ViewBag.Proizvodi = db.Proizvodi.Where(p => p.Status).ToList(); // For dropdown
+            ViewBag.Ocene = ocene; // dodeljuje se pogledu
+            ViewBag.IsAuthenticated = User.Identity.IsAuthenticated;
+            ViewBag.Proizvodi = db.Proizvodi.Where(p => p.Status).ToList(); // dropdown proizvodi
             return View();
         }
-        
 
-        // POST: Add Review (only for logged-in users)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize] // Ensures logged in
-        public ActionResult AddReview(Ocena ocena)
+        [Authorize]
+        public ActionResult OstaviOcenu(Ocena ocena)
         {
-            if (!ModelState.IsValid)
-            {
-                // Reload reviews and return partial error (for AJAX if needed)
-                var ocene = LoadReviews(); // Helper below
-                ViewBag.Ocene = ocene;
-                return PartialView("_ReviewsSection", this); // Or full Index
-            }
             var customUser = User as CustomPrincipal;
             if (customUser?.IsInRole("Korisnik") != true)
             {
@@ -51,57 +40,18 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             }
             ocena.KorisnikId = GetCurrentUserId();
             ocena.Datum = DateTime.Now;
-            // ProizvodId: If null, it's general coffeeshop review; else from form
             try
             {
                 db.Ocene.Add(ocena);
                 db.SaveChanges();
-                TempData["SuccessMessage"] = "Ocena je poslata na odobrenje! Hvala!";
+                TempData["SuccessMessage"] = "Ocena je uspešno obrađena! Hvala!";
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Greška pri slanju ocene: " + ex.Message);
             }
-            // Reload and redirect to show updated list
             return RedirectToAction("Index");
         }
-        // GET: Partial for Registration Modal (for non-logged users)
-        public ActionResult RegisterModal()
-        {
-            return PartialView("_RegisterModal", new Korisnik());
-        }
-        // POST: AJAX Registration for Modal (non-logged users)
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public JsonResult RegisterModal(Korisnik korisnik, string potvrdaLozinke)
-        {
-            if (!ModelState.IsValid || !korisnik.Password.Equals(potvrdaLozinke))
-            {
-                return Json(new { success = false, errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
-            }
-            if (db.Korisnici.Any(k => k.Username == korisnik.Username))
-            {
-                return Json(new { success = false, errors = new[] { "Korisničko ime je zauzeto." } });
-            }
-            korisnik.PasswordHash = BCrypt.Net.BCrypt.HashPassword(korisnik.Password);
-            korisnik.Uloga = "Korisnik";
-            korisnik.IsActive = true;
-            korisnik.Email = korisnik.Email?.Trim();
-            try
-            {
-                db.Korisnici.Add(korisnik);
-                db.SaveChanges();
-                // Auto-login after register (set cookie)
-                AutentifikacijaKorisnika(korisnik.Username, korisnik.Uloga); // Reuse from NaloziController (make shared or copy)
-                return Json(new { success = true, message = "Registracija uspešna! Automatski ste ulogovani.", username = korisnik.Username });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, errors = new[] { "Greška: " + ex.Message } });
-            }
-        }
-
-        // Helper: Get current user ID (reuse from ProdavnicaController)
         private int GetCurrentUserId()
         {
             var customUser = User as CustomPrincipal;
@@ -110,9 +60,7 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             var korisnik = db.Korisnici.FirstOrDefault(k => k.Username == korisnickoIme);
             return korisnik?.KorisnikId ?? 0;
         }
-
-        // Helper: Load reviews (reusable)
-        private List<Ocena> LoadReviews()
+        private List<Ocena> UcitajOcene()
         {
             return db.Ocene
                 .Include(o => o.Korisnik)
@@ -120,18 +68,6 @@ namespace A_Gde_Si_Ti_Pub.Controllers
                 .OrderByDescending(o => o.Datum)
                 .Take(5)
                 .ToList();
-        }
-        // Helper: Auto-login (copy from NaloziController or make a base/shared method)
-        private void AutentifikacijaKorisnika(string username, string uloga)
-        {
-            var ticket = new FormsAuthenticationTicket(1, username, DateTime.Now, DateTime.Now.AddMinutes(30), true, uloga);
-            var encryptedTicket = FormsAuthentication.Encrypt(ticket);
-            var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket)
-            {
-                HttpOnly = true,
-                Secure = Request.IsSecureConnection
-            };
-            Response.Cookies.Add(cookie);
         }
         public ActionResult About()
         {
@@ -151,17 +87,17 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             return View();
         }
         [Authorize]
-        public ActionResult Profil() //profilna stranica kada se korisnik uloguje
+        public ActionResult Profil()
         {
             var customUser = User as CustomPrincipal;
-            if(customUser == null)
+            if (customUser == null)
             {
                 return RedirectToAction("Login", "Nalozi");
             }
 
             var korisnickoIme = customUser.Identity.Name;
             var korisnik = db.Korisnici.FirstOrDefault(k => k.Username == korisnickoIme);
-            if(korisnik == null)
+            if (korisnik == null)
             {
                 return HttpNotFound("Korisnik nije pronađen");
             }
@@ -169,29 +105,26 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             ViewBag.CurrentUserId = korisnik.KorisnikId;
             return View(korisnik);
         }
-        // Add this at the top of HomeController.cs (inside the class)
         private int TrenutniKupacId()
         {
-            var customUser = User as CustomPrincipal;  // Cast to your custom type
+            var customUser = User as CustomPrincipal;
             if (customUser != null)
             {
-                var username = customUser.Identity.Name;  // Get the username from the identity
-                var korisnik = db.Korisnici.FirstOrDefault(k => k.Username == username);  // Query DB for the user
+                var username = customUser.Identity.Name; //Identity implementira IIdentity - osnovni podaci o korisniku
+                var korisnik = db.Korisnici.FirstOrDefault(k => k.Username == username); //pronadji korisnika u bazi po korisnickom imenu
                 if (korisnik != null)
                 {
-                    return korisnik.KorisnikId;  // Return the ID from the database
+                    return korisnik.KorisnikId;
                 }
                 throw new Exception("Korisnik nije pronađen u bazi. Proverite korisnički nalog.");
             }
             throw new Exception("Korisnik nije autentifikovan. Proverite prijavu.");
         }
 
-
-
-        [Authorize]  // Require login for both roles
+        [Authorize] 
         public ActionResult IzmeniProfil()
         {
-            var korisnikId = TrenutniKupacId();  // This now works
+            var korisnikId = TrenutniKupacId();
             var korisnik = db.Korisnici.Find(korisnikId);
             if (korisnik == null)
             {
@@ -203,25 +136,24 @@ namespace A_Gde_Si_Ti_Pub.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public ActionResult IzmeniProfil(Korisnik formKorisnik)  // Binds form data
+        public ActionResult IzmeniProfil(Korisnik formKorisnik)
         {
             if (!ModelState.IsValid)
             {
-                return View(formKorisnik);  // Return with errors
+                return View(formKorisnik);
             }
 
             var customUser = User as CustomPrincipal;
-            var korisnikId  = TrenutniKupacId();  // From your existing method
-            var originalKorisnik = db.Korisnici.Find(korisnikId);  // Load original for security
+            var korisnikId = TrenutniKupacId();
+            var originalKorisnik = db.Korisnici.Find(korisnikId);
             if (originalKorisnik == null)
             {
                 return HttpNotFound("Korisnik nije pronađen.");
             }
 
-            // Update only editable fields (prevent changing Username, Uloga, etc.)
+            //moze da promeni samo ime i email
             originalKorisnik.Ime = formKorisnik.Ime;
             originalKorisnik.Email = formKorisnik.Email;
-            // Do NOT update: Username, Uloga, IsActive (for security)
 
             try
             {
@@ -231,10 +163,10 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Greška pri ažuriranju profila: " + ex.Message);
-                return View(formKorisnik);  // Return with error
+                return View(formKorisnik);
             }
 
-            return RedirectToAction("Profil");  // Redirect back to profile view
+            return RedirectToAction("Profil");
         }
     }
 }

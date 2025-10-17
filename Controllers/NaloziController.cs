@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
@@ -13,13 +15,11 @@ namespace A_Gde_Si_Ti_Pub.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-        // GET: Nalozi/Registracija
         public ActionResult Registracija()
         {
             return View();
         }
 
-        //POST: Registracija
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Registracija(Korisnik korisnik, string potvrdaLozinke)
@@ -53,7 +53,6 @@ namespace A_Gde_Si_Ti_Pub.Controllers
                 }
                 catch (Exception ex)
                 {
-                    // Handle DB errors (e.g., unique constraint on email if you add one)
                     ModelState.AddModelError("", "Greška pri čuvanju korisnika u bazu: " + ex.Message);
                     return View(korisnik);
                 }
@@ -62,10 +61,9 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             return View(korisnik);
         }
 
-        //GET: Nalozi/Login
         public ActionResult Login(string returnUrl)
         {
-            if (User.Identity.IsAuthenticated)
+            if (User.Identity.IsAuthenticated) // kolacic
             {
                 var customUser = User as CustomPrincipal;
                 if (customUser?.IsInRole("Korisnik") == true)
@@ -74,7 +72,6 @@ namespace A_Gde_Si_Ti_Pub.Controllers
                 }
                 else
                 {
-                    // For Admin: Redirect to profile with message
                     TempData["InfoMessage"] = "Već ste ulogovani kao Admin. Za kupovinu, odjavite se i ulogujte sa Korisnik nalogom.";
                     return RedirectToAction("Profil", "Home");
                 }
@@ -83,21 +80,20 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             return View();
 
         }
-
         //POST: Login
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Login(string username, string password, bool? rememberMe, string returnUrl)
         {
             var korisnik = db.Korisnici.FirstOrDefault(k => k.Username == username && k.IsActive);
-            if(korisnik != null && BCrypt.Net.BCrypt.Verify(password, korisnik.PasswordHash))
+            if (korisnik != null && BCrypt.Net.BCrypt.Verify(password, korisnik.PasswordHash))
             {
                 bool ostaniUlogovan = rememberMe ?? false;
                 AutentifikacijaKorisnika(korisnik.Username, korisnik.Uloga, ostaniUlogovan);
                 return RedirectToLocal(returnUrl);
             }
             ModelState.AddModelError("", "Pogresno korisnicko ime ili lozinka.");
-            return View(new { username, returnUrl }); // Preserve username for UX
+            return View(new { username, returnUrl });
         }
 
         //POST: Logout
@@ -111,18 +107,18 @@ namespace A_Gde_Si_Ti_Pub.Controllers
         private void AutentifikacijaKorisnika(string username, string uloga, bool rememberMe = false)
         {
             var ticket = new FormsAuthenticationTicket(
-                1, // version
+                1,
                 username,
                 DateTime.Now,
                 DateTime.Now.AddMinutes(30),
                 rememberMe,
-                uloga // UserData (role)
+                uloga
     );
             var encryptedTicket = FormsAuthentication.Encrypt(ticket);
             var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, encryptedTicket)
             {
                 HttpOnly = true,
-                Secure = Request.IsSecureConnection // Use secure in production
+                Secure = Request.IsSecureConnection
             };
             if (rememberMe) cookie.Expires = DateTime.Now.AddDays(14);
             Response.Cookies.Add(cookie);
@@ -133,7 +129,7 @@ namespace A_Gde_Si_Ti_Pub.Controllers
         {
             if (Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
-               
+
             return RedirectToAction("Index", "Home");
         }
         protected override void Dispose(bool disposing)

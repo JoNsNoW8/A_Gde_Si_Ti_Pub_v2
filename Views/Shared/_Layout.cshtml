@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - A Gde Si Ti Pub</title>
 
-    <!-- Bootstrap CSS (if not already included via bundles) -->
+    <!-- Bootstrap CSS-->
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
 
-    <!-- Your custom CSS (load after Bootstrap to override) -->
+    <!--CSS-->
     <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
 
     @Styles.Render("~/Content/css")
@@ -42,7 +42,6 @@
                         <li>@Html.ActionLink("Profil", "Profil", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                     }
                 </ul>
-                <!-- Right side auth links -->
                 <ul class="navbar-nav auth-links">
                     @if (User.Identity.IsAuthenticated)
                     {
