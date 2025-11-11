@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Upravljanje proizvodima</h2>
+<h2 class="naslov">Upravljanje proizvodima</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -17,6 +17,7 @@
 
 <p>
     @Html.ActionLink("Dodaj novi proizvod", "DodajProizvod", null, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Nazad na profil", "Profil", "Home", null, new { @class = "btn btn-secondary" })
 </p>
 
 <table class="table table-bordered table-striped">
@@ -40,7 +41,7 @@
                 <td>@($"{proizvod.Cena:N2} RSD")</td>
                 <td>@(proizvod.Status ? "Da" : "Ne")</td>
                 <td>
-                    @Html.ActionLink("Izmeni", "IzmeniProizvod", new { id = proizvod.ProizvodId }, new { @class = "btn btn-warning btn-sm" })
+                    @Html.ActionLink("Izmeni", "IzmeniProizvod", new { id = proizvod.ProizvodId }, new { @class = "btn btn-secondary btn-sm" })
                     |
                     @Html.ActionLink("Obriši", "ObrisiProizvod", new { id = proizvod.ProizvodId }, new { @class = "btn btn-danger btn-sm", onclick = "return confirm('Sigurno želite da obrišete " + proizvod.Naziv + "?');" })
                 </td>

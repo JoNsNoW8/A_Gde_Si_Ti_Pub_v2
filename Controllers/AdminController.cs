@@ -6,14 +6,14 @@ using System.Web;
 using System.Web.Mvc;
 using A_Gde_Si_Ti_Pub.Models;
 using BCrypt.Net;
+using static A_Gde_Si_Ti_Pub.Controllers.NaloziController;
 
 namespace A_Gde_Si_Ti_Pub.Controllers
 {
-    [Authorize(Roles ="Admin")]
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
-        // GET: Admin
         public ActionResult AdminPocetna()
         {
             var porudzbine = db.Porudzbine
@@ -37,7 +37,7 @@ namespace A_Gde_Si_Ti_Pub.Controllers
         //CRUD za proizvode
         public ActionResult UpravljajProizvodima()
         {
-            var proizvodi = db.Proizvodi.ToList(); // Load all for management
+            var proizvodi = db.Proizvodi.ToList();
             return View(proizvodi);
         }
         public ActionResult DodajProizvod()
@@ -95,28 +95,25 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             {
                 try
                 {
-                    // NEW: Load the original entity from DB by ID (ensures it's attached)
+                    //prikaz proizvoda iz baze po id-u
                     var originalProizvod = db.Proizvodi.Find(formProizvod.ProizvodId);
                     if (originalProizvod == null)
                     {
                         return HttpNotFound("Proizvod nije pronađen. Možda je obrisan.");
                     }
-                    // NEW: Copy properties from form to original (safe merge)
+                    // dodeljujemo nove vrednosti
                     originalProizvod.Naziv = formProizvod.Naziv;
                     originalProizvod.Opis = formProizvod.Opis;
                     originalProizvod.Cena = formProizvod.Cena;
                     originalProizvod.Slika = formProizvod.Slika;
                     originalProizvod.Status = formProizvod.Status;
-                    // Save the attached entity (EF knows it's modified)
                     db.SaveChanges();
                     TempData["SuccessMessage"] = $"Proizvod '{originalProizvod.Naziv}' uspešno izmenjen!";
                     return RedirectToAction("UpravljajProizvodima");
                 }
                 catch (Exception ex)
                 {
-                    // NEW: More specific error handling
-                    ModelState.AddModelError("", $"Greška pri izmeni: {ex.Message}. Ako se ponavlja, proverite da li je proizvod još u bazi.");
-                    // Re-load for error display
+                    ModelState.AddModelError("", $"Greška pri izmeni: {ex.Message}.");
                     var errorProizvod = db.Proizvodi.Find(formProizvod.ProizvodId);
                     return View(errorProizvod ?? formProizvod);
                 }
@@ -147,7 +144,6 @@ namespace A_Gde_Si_Ti_Pub.Controllers
         }
 
         //CRUD za porudzbine
-        //prikaz porudzbinama, get akcija
         public ActionResult UpravljajPorudzbinama()
         {
             var porudzbina = db.Porudzbine
@@ -160,47 +156,37 @@ namespace A_Gde_Si_Ti_Pub.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UpravljajPorudzbinom(Porudzbina porudzbina)
-        {
-            db.Entry(porudzbina).State = EntityState.Modified;
-            db.SaveChanges();
-            return RedirectToAction("Profil");
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult UrediPorudzbinu(int porudzbinaId, string status)
         {
             if (!ModelState.IsValid)
             {
-                // Reload list for error display
+                // prikaz liste porudzbina sa greskom ukoliko podaci nisu validni
                 var porudzbine = db.Porudzbine
                     .Include(p => p.Korisnik)
                     .Include(p => p.DeloviPorudzbine.Select(dp => dp.Proizvod))
                     .OrderByDescending(p => p.Datum)
                     .ToList();
                 ViewBag.Error = "Nevažeći podaci. Pokušajte ponovo.";
-                return View("UpravljajPorudzbinama", porudzbine);  // Return to list with errors
+                return View("UpravljajPorudzbinama", porudzbine);
             }
             try
             {
-                // Load original entity by ID (like your product edit fix - prevents 0-rows error)
                 var porudzbina = db.Porudzbine.Find(porudzbinaId);
                 if (porudzbina == null)
                 {
-                    TempData["ErrorMessage"] = "Porudžbina nije pronađena (možda obrisana).";
+                    TempData["ErrorMessage"] = "Porudžbina nije pronađena.";
                     return RedirectToAction("UpravljajPorudzbinama");
                 }
-                
+
                 porudzbina.Status = status;
-                // Example: if you have DatumIsporuke, originalPorudzbina.DatumIsporuke = formPorudzbina.DatumIsporuke;
-                db.SaveChanges();  // EF updates only changed fields
+                db.SaveChanges();
                 TempData["SuccessMessage"] = $"Porudžbina #{porudzbinaId} ažurirana (Status: {porudzbina.Status}).";
             }
             catch (Exception ex)
             {
                 TempData["ErrorMessage"] = "Greška pri ažuriranju: " + ex.Message;
             }
-            return RedirectToAction("UpravljajPorudzbinama");  // FIXED: Redirect to list (not Profil)
+            return RedirectToAction("UpravljajPorudzbinama");
         }
 
         public ActionResult ObrisiPorudzbinu(int porudzbinaId)
@@ -261,7 +247,7 @@ namespace A_Gde_Si_Ti_Pub.Controllers
                 {
                     db.SaveChanges();
                 }
-                catch (System.Data.Entity.Validation.DbEntityValidationException ex)
+                catch (System.Data.Entity.Validation.DbEntityValidationException ex) //debug 
                 {
                     foreach (var eve in ex.EntityValidationErrors)
                     {
@@ -271,7 +257,7 @@ namespace A_Gde_Si_Ti_Pub.Controllers
                             System.Diagnostics.Debug.WriteLine($"Property: {ve.PropertyName}, Error: {ve.ErrorMessage}");
                         }
                     }
-                    throw; // rethrow to see it in the debugger
+                    throw;
                 }
 
                 TempData["SuccessMessage"] = $"Korisnik '{korisnik.Username}' {(korisnik.IsActive ? "aktivan" : "deaktiviran")}.";
@@ -309,6 +295,7 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             if (korisnik == null) return HttpNotFound("Korisnik nije pronadjen");
             return View(korisnik);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult IzmeniKorisnika(Korisnik formKorisnik)
@@ -317,17 +304,21 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             {
                 try
                 {
-                    // NEW: Load the original entity from DB by ID (ensures it's attached)
                     var originalKorisnik = db.Korisnici.Find(formKorisnik.KorisnikId);
                     if (originalKorisnik == null)
                     {
                         return HttpNotFound("Korisnik nije pronađen. Možda je obrisan.");
                     }
+
                     originalKorisnik.Ime = formKorisnik.Ime;
                     originalKorisnik.Username = formKorisnik.Username;
                     originalKorisnik.Email = formKorisnik.Email;
-                    originalKorisnik.Uloga = formKorisnik.Uloga;
                     originalKorisnik.IsActive = formKorisnik.IsActive;
+
+                    if (!string.IsNullOrWhiteSpace(formKorisnik.Password))
+                    {
+                        originalKorisnik.PasswordHash = BCrypt.Net.BCrypt.HashPassword(formKorisnik.Password);
+                    }
 
                     db.SaveChanges();
                     TempData["SuccessMessage"] = $"Korisnik '{originalKorisnik.Ime}' uspešno izmenjen!";
@@ -335,9 +326,7 @@ namespace A_Gde_Si_Ti_Pub.Controllers
                 }
                 catch (Exception ex)
                 {
-
-                    ModelState.AddModelError("", $"Greška pri izmeni: {ex.Message}. Ako se ponavlja, proverite da li je korisnik još u bazi.");
-                    // Re-load for error display
+                    ModelState.AddModelError("", $"Greška pri izmeni: {ex.Message}.");
                     var errorKorisnik = db.Korisnici.Find(formKorisnik.KorisnikId);
                     return View(errorKorisnik ?? formKorisnik);
                 }
@@ -349,12 +338,9 @@ namespace A_Gde_Si_Ti_Pub.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult KreirajKorisnika(Korisnik noviKorisnik, string potvrdaLozinke)
         {
-            // Server-side sanity: ensure current user is admin (controller already [Authorize(Roles="Admin")])
             if (!ModelState.IsValid)
             {
-                // If model validation fails, return the form with errors (client will see messages)
-                // Optional: log validation errors for easier debugging (remove in production)
-                foreach (var kv in ModelState)
+                foreach (var kv in ModelState) // debug
                 {
                     foreach (var err in kv.Value.Errors)
                     {
@@ -364,23 +350,20 @@ namespace A_Gde_Si_Ti_Pub.Controllers
                 return View(noviKorisnik);
             }
 
-            // Validate password confirmation
             if (!string.IsNullOrEmpty(noviKorisnik.Password) && !noviKorisnik.Password.Equals(potvrdaLozinke))
             {
                 ModelState.AddModelError("potvrdaLozinke", "Lozinke se ne poklapaju.");
                 return View(noviKorisnik);
             }
 
-            // Duplicate username check
             if (db.Korisnici.Any(k => k.Username == noviKorisnik.Username))
             {
                 ModelState.AddModelError("Username", "Korisničko ime je zauzeto.");
                 return View(noviKorisnik);
             }
 
-            // Prepare and save
             noviKorisnik.PasswordHash = BCrypt.Net.BCrypt.HashPassword(noviKorisnik.Password);
-            noviKorisnik.Uloga = "Korisnik"; // Force regular user
+            noviKorisnik.Uloga = "Korisnik";
             noviKorisnik.IsActive = true;
             noviKorisnik.Email = noviKorisnik.Email?.Trim();
 
@@ -393,16 +376,12 @@ namespace A_Gde_Si_Ti_Pub.Controllers
             }
             catch (Exception ex)
             {
-                // Log exception and show a user-friendly error
                 System.Diagnostics.Debug.WriteLine("Error creating user: " + ex);
                 ModelState.AddModelError("", "Greška pri kreiranju korisnika: " + ex.Message);
             }
 
             return View(noviKorisnik);
         }
-
-        //pravljenje admin naloga
-
         public ActionResult KreirajAdmina()
         {
             return View(new Korisnik());
@@ -414,29 +393,29 @@ namespace A_Gde_Si_Ti_Pub.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(noviAdmin); // Block if invalid
+                return View(noviAdmin);
             }
             if (!string.IsNullOrEmpty(noviAdmin.Password) && !noviAdmin.Password.Equals(potvrdaLozinke))
             {
                 ModelState.AddModelError("potvrdaLozinke", "Lozinke se ne poklapaju.");
                 return View(noviAdmin);
             }
-            // Check for duplicate username
+
             if (db.Korisnici.Any(k => k.Username == noviAdmin.Username))
             {
                 ModelState.AddModelError("Username", "Korisničko ime je zauzeto.");
                 return View(noviAdmin);
             }
             noviAdmin.PasswordHash = BCrypt.Net.BCrypt.HashPassword(noviAdmin.Password);
-            noviAdmin.Uloga = "Admin"; // Force Admin (secure)
+            noviAdmin.Uloga = "Admin";
             noviAdmin.IsActive = true;
             noviAdmin.Email = noviAdmin.Email?.Trim();
 
             try
             {
                 db.Korisnici.Add(noviAdmin);
-                db.SaveChanges(); // Saves to DB
-                TempData["SuccessMessage"] = $"Admin nalog '{noviAdmin.Username}' uspešno kreiran! Lozinka: {noviAdmin.Password} (promenite nakon prvog logovanja).";
+                db.SaveChanges();
+                TempData["SuccessMessage"] = $"Admin nalog '{noviAdmin.Username}' uspešno kreiran!";
                 return RedirectToAction("UpravljajKorisnicima");
             }
             catch (Exception ex)
@@ -446,8 +425,6 @@ namespace A_Gde_Si_Ti_Pub.Controllers
 
             return View(noviAdmin);
         }
-      
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)

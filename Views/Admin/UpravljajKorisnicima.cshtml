@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Upravljanje korisnicima</h2>
+<h2 class="naslov">Upravljanje korisnicima</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -16,9 +16,9 @@
 }
 
 <p>
-    @Html.ActionLink("Dodaj korisnika", "KreirajKorisnika", null, new { @class = "btn btn-success" })
-    @Html.ActionLink("Dodaj administratora", "KreirajAdmina", null, new { @class = "btn btn-warning" })
-    @Html.ActionLink("Nazad na početnu", "Index", "Home", null, new { @class = "btn btn-secondary" })
+    @Html.ActionLink("Dodaj korisnika", "KreirajKorisnika", null, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Dodaj administratora", "KreirajAdmina", null, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Nazad na profil", "Profil", "Home", null, new { @class = "btn btn-secondary" })
 </p>
 
 <table class="table table-bordered table-striped">
@@ -44,16 +44,10 @@
                 <td>@k.Uloga</td>
                 <td>@(k.IsActive ? "Da" : "Ne")</td>
                 <td>
-                    @if (k.Uloga != "Admin")
-                    {
-                        @Html.ActionLink("Deaktiviraj/Aktiviraj", "ToggleKorisnik", new { id = k.KorisnikId }, new { @class = "btn btn-warning btn-sm" })
-                    }
-                    else
-                    {
-                        <span style="color:black" class="badge badge-danger">Admin (ne može se menjati)</span>
-                    }
+                        @Html.ActionLink("Deaktiviraj/Aktiviraj", "ToggleKorisnik", new { id = k.KorisnikId }, new { @class = "btn btn-secondary btn-sm" })
+                    
 
-                    @Html.ActionLink("Izmeni", "IzmeniKorisnika", new { id = k.KorisnikId }, new { @class = "btn btn-warning btn-sm" })
+                    @Html.ActionLink("Izmeni", "IzmeniKorisnika", new { id = k.KorisnikId }, new { @class = "btn btn-secondary btn-sm" })
                     |
                     @Html.ActionLink("Obriši", "ObrisiKorisnika", new { id = k.KorisnikId }, new { @class = "btn btn-danger btn-sm", onclick = "return confirm('Sigurno želite da obrišete korisnika " + k.Ime + "?');" })
                 </td>

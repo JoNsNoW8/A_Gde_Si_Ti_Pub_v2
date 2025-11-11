@@ -15,12 +15,12 @@ namespace A_Gde_Si_Ti_Pub.Models
         [Index(IsUnique = true)]
         public string Naziv { get; set; }
         [StringLength(500)]
-        public string Opis { get; set; } // Optional description
+        public string Opis { get; set; }
         [StringLength(200)]
-        public string Slika { get; set; } // e.g., "~/images/mug.jpg"
+        public string Slika { get; set; }
         [Required]
         [Range(0.01, double.MaxValue)]
         public decimal Cena { get; set; }
-        public bool Status { get; set; } = true; // true = Available/In Stock
+        public bool Status { get; set; } = true;
     }
 }

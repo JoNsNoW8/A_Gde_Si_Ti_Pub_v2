@@ -7,8 +7,8 @@
 }
 
 <div class="container">
-    <h2>Naša Prodavnica - Merch</h2>
-    <p>Izaberite proizvode iz naše kolekcije.</p>
+    <h2 style="padding-top:10px" class="naslov">Naša prodavnica</h2>
+    <p class="podnaslov">Izaberite proizvode iz naše kolekcije.</p>
 
     @if (!User.Identity.IsAuthenticated)
     {
@@ -22,7 +22,6 @@
         var customUser = User as A_Gde_Si_Ti_Pub.Models.CustomPrincipal;
         if (customUser?.IsInRole("Korisnik") != true)
         {
-            <!-- NEW: Specific message for Admin or other roles -->
             <div class="alert alert-warning">
                 <p>
                     Vaš nalog (@User.Identity.Name) ne podržava kupovinu (samo Korisnik uloga).
@@ -30,10 +29,6 @@
                     <a href="@Url.Action("Logout", "Nalozi")">odjavite se</a> i ulogujte se sa Korisnik nalogom.
                 </p>
             </div>
-        }
-        else
-        {
-            <!-- For Korisnik: No message needed -->
         }
     }
 
@@ -57,23 +52,25 @@
                          style="height: 200px; object-fit: cover;"
                          onerror="this.src='https://via.placeholder.com/300x200?text=No+Image';" />
                     <div class="card-body">
-                        <h5 class="card-title">@proizvod.Naziv</h5>
-                        <p class="card-text">@proizvod.Opis</p>
-                        <p class="text-primary h5">@($"{proizvod.Cena:N2} RSD")</p>
+                        <h5 class="card-title kartica">@proizvod.Naziv</h5>
+                        <p class="card-text proizvod">@proizvod.Opis</p>
+                        <div>
+                            <p class="text-primary h5 proizvod mb-0" style="padding-top:15px">@($"{proizvod.Cena:N2} RSD")</p>
+                        </div>
 
                     </div>
                     <div class="card-footer">
                         @if (MozeKorpa)
                         {
-                                using (Html.BeginForm("DodajUKorpu", "Prodavnica", FormMethod.Post))
-                                {
-                                    @Html.AntiForgeryToken()
-                                    @Html.Hidden("proizvodId", proizvod.ProizvodId)
-                                    <div class="input-group">
-                                        <input type="number" name="kolicina" value="1" min="1" step="1" class="form-control" style="width: 80px;" placeholder="Količina" />
-                                        <button type="submit" class="btn btn-success">Dodaj u Korpu</button>
-                                    </div>
-                                }
+                            using (Html.BeginForm("DodajUKorpu", "Prodavnica", FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.Hidden("proizvodId", proizvod.ProizvodId)
+                                <div class="input-group">
+                                    <input type="number" name="kolicina" value="1" min="1" step="1" class="form-control proizvod" style="width: 80px;" placeholder="Količina" />
+                                    <button type="submit" class="btn btn-success proizvod">Dodaj u Korpu</button>
+                                </div>
+                            }
                         }
                         else
                         {   //neulogovan korisnik

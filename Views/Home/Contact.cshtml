@@ -1,19 +1,51 @@
 ﻿@{
     ViewBag.Title = "Contact";
 }
-<main aria-labelledby="title">
-    <h2 id="title">@ViewBag.Title.</h2>
-    <h3>@ViewBag.Message</h3>
 
-    <address>
-        One Microsoft Way<br />
-        Redmond, WA 98052-6399<br />
-        <abbr title="Phone">P:</abbr>
-        425.555.0100
-    </address>
+<main aria-labelledby="title" class="contact-page">
+    <h2 id="title" class="naslov text-center mb-4">Pronađi nas!</h2>
+    <h3 class="text-center podnaslov mb-5">Tu u komšiluku</h3>
 
-    <address>
-        <strong>Support:</strong>   <a href="mailto:Support@example.com">Support@example.com</a><br />
-        <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
-    </address>
+    <div class="container">
+        <div class="row align-items-center mb-5">
+            <div class="col-md-6">
+                <address class="kontakt">
+                    <p>
+                        <strong>Adresa:</strong><br />
+                        Novosadskog sajma 21, L2<br />
+                        Novi Sad
+                    </p>
+                    <p>
+                        <strong>Telefon:</strong><br />
+                        <a href="tel:+381603304801" class="kontakt-link">060 330 4801</a>
+                    </p>
+                    <p>
+                        <strong>Instagram:</strong><br />
+                        <a href="https://www.instagram.com/agdesiti.culturepub/" target="_blank" class="kontakt-link">
+                            agdesiti.culturepub
+                        </a>
+                    </p>
+                </address>
+            </div>
+
+            <div class="col-md-6">
+                <div class="map-responsive rounded shadow">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2808.653794856114!2d19.829965675414783!3d45.25479314738757!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x475b1100404769b7%3A0x32f166feb2ed96ef!2sA%20gde%20si%20ti!5e0!3m2!1sen!2srs!4v1760528199929!5m2!1sen!2srs"
+                            width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+
+        <div class="opis text-center">
+            <p>
+                Hoćeš da rezervišeš sto, predložiš događaj ili da samo kažeš <strong>“vidimo se večeras”</strong>?
+                Piši nam, zovi nas, dođi lično — sve opcije su dobre dok vode do druženja.
+            </p>
+            <p>
+                Mi nismo mesto koje se traži, nego ono <strong>gde se vraćaš.</strong>
+            </p>
+        </div>
+    </div>
 </main>

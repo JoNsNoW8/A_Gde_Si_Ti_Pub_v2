@@ -5,7 +5,7 @@
     decimal ukupnaCena = ViewBag.UkupnaCena as decimal? ?? 0;
 }
 
-<h2>Vaša korpa</h2>
+<h2 class="naslov">Vaša korpa</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -84,21 +84,19 @@ else
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <script>
-        let updateTimeout; // For debouncing input changes
+        let updateTimeout;
 
-        // UPDATED: Auto-update on quantity input change (arrows, typing, blur)
-        function azurirajKolicinuNaPromenu(proizvodId) {
-            clearTimeout(updateTimeout); // Cancel previous timeout
+        function azurirajKolicinuNaPromenu(proizvodId) { //koirsnik menja kolicinu u korpi
+            clearTimeout(updateTimeout);
             updateTimeout = setTimeout(function() {
                 var kolicina = parseInt($('#kolicina-' + proizvodId).val()) || 1;
                 azurirajKolicinu(proizvodId, kolicina);
-            }, 500); // Wait 500ms after last change (debounce for arrows/typing)
+            }, 500);
         }
 
-        // UPDATED: Core update function (handles AJAX, loading, success/error)
 
-        function azurirajKolicinu(proizvodId, kolicina) {
-            var btn = $('#ukloni-' + proizvodId); // Disable during request
+        function azurirajKolicinu(proizvodId, kolicina) { 
+            var btn = $('#ukloni-' + proizvodId);
             btn.prop('disabled', true).text('Ažuriram...');
 
             $.post('@Url.Action("AzurirajKorpu", "Prodavnica")',
@@ -106,14 +104,12 @@ else
                     __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
                     proizvodId: proizvodId, kolicina: kolicina
                 }, function (data) {
-                btn.prop('disabled', false).text('Ukloni'); // Re-enable
+                btn.prop('disabled', false).text('Ukloni');
 
                 if (data.success) {
-                    // Success: Reload page to update subtotals/total (simple)
                     location.reload();
                 } else {
                     alert(data.message || 'Greška pri ažuriranju korpe.');
-                    // Reset input if error
                     $('#kolicina-' + proizvodId).val(data.subtotal > 0 ? (kolicina || 1) : 1);
                 }
             }).fail(function() {
@@ -122,7 +118,6 @@ else
             });
         }
 
-        // UPDATED: Ukloni (calls update with 0)
         function ukloniIzKorpe(proizvodId) {
             if (confirm('Sigurno ukloniti ovu stavku iz korpe?')) {
                 azurirajKolicinu(proizvodId, 0);

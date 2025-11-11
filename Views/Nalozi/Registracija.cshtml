@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Registracija</h2>
+<h2 class="naslov">Registracija</h2>
 
 @using (Html.BeginForm("Registracija", "Nalozi", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
@@ -47,21 +47,9 @@
         <label class="control-label col-md-2">Potvrdi lozinku</label>
         <div class="col-md-10">
             <input type="password" name="potvrdaLozinke" class="form-control" required="required" />
-            @Html.ValidationMessage("potvrdaLozinke", "", new { @class = "text-danger", id = "confirmError" }) <!-- Custom error in controller -->
+            @Html.ValidationMessage("potvrdaLozinke", "", new { @class = "text-danger", id = "confirmError" })
         </div>
     </div>
-
-    //biranje uloge
-    /*
-    <div class="form-group">
-        <label class="control-label col-md-2">Uloga</label>
-        <div class="col-md-10">
-            @Html.DropDownList("Uloga", new SelectList(new Dictionary<string, string> { { "Korisnik", "Korisnik" }, { "Admin", "Administrator" } }), "Izaberite ulogu", new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Uloga, "", new { @class = "text-danger" })
-            <small class="text-muted">Nova registracija će biti kao 'Korisnik'. Admin nalozi se kreiraju posebno.</small>
-        </div>
-    </div>
-    */
     <br />
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
@@ -77,16 +65,15 @@
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
     <script>
-        // Optional: Client-side password match check (shows error before submit, reduces frustration)
         $(function () {
             $('#potvrdaLozinke').on('input', function () {
                 var password = $('#Password').val();
                 var confirm = $(this).val();
                 var errorDiv = $('#confirmError');
                 if (password !== confirm && confirm.length > 0) {
-                    errorDiv.text('Lozinke se ne poklapaju.'); // Preview error
+                    errorDiv.text('Lozinke se ne poklapaju.');
                 } else {
-                    errorDiv.text(''); // Clear
+                    errorDiv.text('');
                 }
             });
         });

@@ -22,9 +22,9 @@ namespace A_Gde_Si_Ti_Pub.Models
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Porudzbina>()
-                 .HasMany(o => o.DeloviPorudzbine)  // svaka porudzbina ima vise proiyzvoda
-                 .WithRequired(d => d.Porudzbina)        //
-                 .HasForeignKey(d => d.PorudzbinaId);    //
+                 .HasMany(o => o.DeloviPorudzbine)  // svaka porudzbina ima vise proizvoda
+                 .WithRequired(d => d.Porudzbina)        
+                 .HasForeignKey(d => d.PorudzbinaId);
 
             modelBuilder.Entity<Porudzbina>()
                 .HasRequired(p => p.Korisnik) // Svaka porudzbina ima jednog korisnika
@@ -33,17 +33,17 @@ namespace A_Gde_Si_Ti_Pub.Models
 
             modelBuilder.Entity<Ocena>()
                  .HasRequired(o => o.Korisnik)
-                 .WithMany() // One user can have many ratings
+                 .WithMany() // Korisnik moze imati vise ocena
                  .HasForeignKey(o => o.KorisnikId);
 
             modelBuilder.Entity<Ocena>()
-                 .HasOptional(o => o.Proizvod) // Optional FK
+                 .HasOptional(o => o.Proizvod)
                  .WithMany()
                  .HasForeignKey(o => o.ProizvodId);
 
             modelBuilder.Entity<DeloviPorudzbine>()
-                 .HasRequired(d => d.Porudzbina)
-                 .WithMany(p => p.DeloviPorudzbine)
+                 .HasRequired(d => d.Porudzbina)// svaka stavka porudzbine pripada jednoj porudzbini
+                 .WithMany(p => p.DeloviPorudzbine)// jedna porudzbina ima vise stavki
                  .HasForeignKey(d => d.PorudzbinaId);
 
             modelBuilder.Entity<DeloviPorudzbine>()

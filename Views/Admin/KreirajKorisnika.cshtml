@@ -4,9 +4,9 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Kreiraj novog korisnika</h2>
+<h2 class="naslov">Kreiraj novog korisnika</h2>
 
-<p>Kreirajte novi korisnički nalog (uloga 'Korisnik').</p>
+<p class="podnaslov">Kreirajte novi korisnički nalog (uloga 'Korisnik').</p>
 
 @using (Html.BeginForm("KreirajKorisnika", "Admin", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {

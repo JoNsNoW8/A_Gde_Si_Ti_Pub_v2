@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Upravljanje ocenama</h2>
+<h2 class="naslov">Upravljanje ocenama</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -16,7 +16,7 @@
 }
 
 <p>
-    @Html.ActionLink("Nazad na početnu", "Index","Home", null, new { @class = "btn btn-secondary" })
+    @Html.ActionLink("Nazad na profil", "Profil","Home", null, new { @class = "btn btn-secondary" })
 </p>
 
 <table class="table table-bordered table-striped">

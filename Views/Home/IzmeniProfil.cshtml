@@ -4,7 +4,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Izmeni profil</h2>
+<h2 class="naslov">Izmeni profil</h2>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -15,16 +15,16 @@
     <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
 }
 
-<p>Ovde možete ažurirati vaše podatke.</p>
+<p class="podnaslov">Ovde možete ažurirati vaše podatke.</p>
 
 @using (Html.BeginForm("IzmeniProfil", "Home", FormMethod.Post, new { @class = "form-horizontal" }))
 {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    @Html.HiddenFor(m => m.KorisnikId) @* Hidden to preserve ID *@
-    @Html.HiddenFor(m => m.Username) @* Hidden, not editable *@
-    @Html.HiddenFor(m => m.Uloga) @* Hidden, not editable *@
-    @Html.HiddenFor(m => m.IsActive) @* Hidden, not editable *@
+    @Html.HiddenFor(m => m.KorisnikId)
+    @Html.HiddenFor(m => m.Username) 
+    @Html.HiddenFor(m => m.Uloga) 
+    @Html.HiddenFor(m => m.IsActive) 
 
     <div class="form-group">
         @Html.LabelFor(m => m.Ime, new { @class = "control-label col-md-2" })
@@ -41,7 +41,7 @@
             @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
         </div>
     </div>
-
+    <br />
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
             <button type="submit" class="btn btn-success">Sačuvaj Izmene</button>

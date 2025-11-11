@@ -6,7 +6,7 @@
     decimal ukupnaCena = Model.UkupnaCena;
 }
 
-<h2>Kreirajte porudžbinu</h2>
+<h2 class="naslov">Kreirajte porudžbinu</h2>
 
 @if (TempData["ErrorMessage"] != null)
 {
@@ -14,18 +14,17 @@
 }
 
 <div class="row">
-    <!-- Left: Cart Summary -->
     <div class="col-md-6">
-        <h4>Vaša korpa (Pregled)</h4>
+        <h4 class="podnaslov">Vaša korpa (Pregled)</h4>
         @if (korpa != null && korpa.Any())
         {
             <table class="table table-bordered table-sm">
                 <thead>
                     <tr>
-                        <th class="text-center">Proizvod</th>
+                        <th>Proizvod</th>
                         <th class="text-center">Količina</th>
-                        <th class="text-center">Cena</th>
-                        <th class="text-center">Ukupna cena</th>
+                        <th>Cena</th>
+                        <th>Ukupna cena</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -53,7 +52,6 @@
         }
     </div>
 
-    <!-- Right: User Details Form -->
     <div class="col-md-6">
         <h4>Detalji dostave</h4>
         <p>Popunite vaše podatke za dostavu. Porudžbina će biti obrađena uskoro.</p>
@@ -63,7 +61,6 @@
             @Html.AntiForgeryToken()
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-            <!-- Ime (Name) -->
             <div class="form-group">
                 @Html.LabelFor(m => m.Ime, new { @class = "control-label col-md-3" })
                 <div class="col-md-9">
@@ -72,7 +69,6 @@
                 </div>
             </div>
 
-            <!-- Prezime (Surname) -->
             <div class="form-group">
                 @Html.LabelFor(m => m.Prezime, new { @class = "control-label col-md-3" })
                 <div class="col-md-9">
@@ -81,7 +77,6 @@
                 </div>
             </div>
 
-            <!-- Adresa (Address) -->
             <div class="form-group">
                 @Html.LabelFor(m => m.Adresa, new { @class = "control-label col-md-3" })
                 <div class="col-md-9">
@@ -90,7 +85,6 @@
                 </div>
             </div>
 
-            <!-- Email (pre-filled from profile) -->
             <div class="form-group">
                 @Html.LabelFor(m => m.Email, new { @class = "control-label col-md-3" })
                 <div class="col-md-9">
@@ -99,21 +93,20 @@
                 </div>
             </div>
 
-            <!-- Hidden fields for cart (not needed since session-based, but for completeness) -->
             @Html.HiddenFor(m => m.KorisnikId)
             @Html.HiddenFor(m => m.Datum)
             @Html.HiddenFor(m => m.UkupnaCena)
             @Html.HiddenFor(m => m.Status, new { value = "Obrada" })
 
-    <div class="form-group">
-        <div class="col-md-offset-3 col-md-9">
-            <button type="submit" class="btn btn-success btn-lg" onclick="return confirm('Potvrdite porudžbinu? Ukupno: @ukupnaCena.ToString("C"). Ovo će sačuvati narudžbinu u bazu i obrisati korpu.');">
-                Potvrdi porudžbinu
-            </button>
-        </div>
-        <br />
-        @Html.ActionLink("Nazad na Korpu", "Korpa", null, new { @class = "btn btn-secondary" })
-    </div>
+            <div class="form-group">
+                <div class="col-md-offset-3 col-md-9">
+                    <button type="submit" class="btn btn-success btn-lg" onclick="return confirm('Potvrdite porudžbinu? Ukupno: @ukupnaCena.ToString("C"). Ovo će sačuvati narudžbinu u bazu i obrisati korpu.');">
+                        Potvrdi porudžbinu
+                    </button>
+                </div>
+                <br />
+                @Html.ActionLink("Nazad na Korpu", "Korpa", null, new { @class = "btn btn-secondary" })
+            </div>
         }
     </div>
 </div>

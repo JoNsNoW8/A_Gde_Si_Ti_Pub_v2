@@ -2,135 +2,127 @@
     ViewBag.Title = "Početna";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var ocene = ViewBag.Ocene as List<A_Gde_Si_Ti_Pub.Models.Ocena>;
-    var isAuthenticated = ViewBag.IsAuthenticated as bool? ?? false;
-    var currentUserId = ViewBag.CurrentUserId as int? ?? 0;
-    var proizvodi = ViewBag.Proizvodi as List<A_Gde_Si_Ti_Pub.Models.Proizvod>; // optional
+    var proizvodi = ViewBag.Proizvodi as List<A_Gde_Si_Ti_Pub.Models.Proizvod>;
 }
 
-<div class="container">
-    <h2>Šta naši kupci kažu o nama</h2>
 
-    <div id="reviewsSection">
-        @if (ocene != null && ocene.Any())
-        {
-            <div class="row">
-                @foreach (var ocena in ocene)
-                {
-                    <div class="col-md-6 mb-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">@ocena.Vrednost / 5 Zvezdica</h5>
-                                <p class="card-text">@ocena.Komentar</p>
-                                <small class="text-muted">
-                                    Od: @(ocena.Korisnik != null ? ocena.Korisnik.Username : "Nepoznato") <br />
-                                    @if (ocena.ProizvodId.HasValue)
-                                    {
-                                        @:Za proizvod: @ocena.Proizvod?.Naziv <br />
-                                    }
-                                    else
-                                    {
-                                        @:Opšta ocena kafića <br />
-                                    }
-                                    Datum: @ocena.Datum.ToShortDateString() <!-- Fixed: Use CreatedDate from model -->
-                                </small>
+<p class="pocetna" style="padding-top:40px; text-align:center;">Dobrodošao u mesto gde se ne gleda u telefon nego u ljude!</p>
+<header class="py-5 bg-image-full"
+        style="background-image: url('https://source.unsplash.com/wfh8dDlNFOk/1500x800')">
+    <div class="text-center my-5">
+        <img class="img-fluid rounded-circle mb-4" src="~/Content/pozadina.jpg" alt="Background image" />
+        
+        <p class="pocetna">
+            Kod nas se priča, smeje, igra i zaboravi na “sutra imam obaveze”.
+        </p>
+        <div class="podnaslov">
+            Mi smo A gde si ti — pab koji postoji jer svima fali ono “ajde da se okupimo”.
+            Ako si došao da pobegneš od gužve, možda si pogrešio mesto — jer ovde tek kreće prava gužva, ali ona dobra.
+            Pikado, društvene igre, priče koje prerastu u prijateljstva, i atmosfera zbog koje ne pitaš “kad ćemo opet”, nego “što nismo češće”
+        </div>
+    </div>
+</header>
+
+<section class="py-5">
+    <div class="container my-5">
+        <h2 class="text-center mb-4">Šta kažu o nama</h2>
+
+        <div id="reviewsSection">
+            @if (ocene != null && ocene.Any())
+            {
+                <div class="row">
+                    @foreach (var ocena in ocene)
+                    {
+                        <div class="col-md-6 mb-4">
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title">@ocena.Vrednost / 5 Zvezdica</h5>
+                                    <p class="card-text">@ocena.Komentar</p>
+                                    <small class="text-muted">
+                                        Od: @(ocena.Korisnik != null ? ocena.Korisnik.Username : "Nepoznato") <br />
+                                        @if (ocena.ProizvodId.HasValue)
+                                        {
+                                            @:Za proizvod: @ocena.Proizvod.Naziv <br />
+                                        }
+                                        else
+                                        {
+                                            @:Opšta ocena kafića <br />
+                                        }
+                                        Datum: @ocena.Datum.ToShortDateString()
+                                    </small>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                }
-            </div>
-        }
-        else
-        {
-            <p>Još nema ocena. Budi prvi!</p>
-        }
-    </div>
-
-    <div class="text-center mt-4">
-        <button id="addReviewBtn" class="btn btn-primary">Dodaj Svoju Ocenu</button>
-    </div>
-
-    @if (User.Identity.IsAuthenticated)
-    {
-        <!-- Forma za dodavanje ocene (ulogovani korisnik) -->
-        <div id="addReviewForm" style="display: none;" class="mt-4">
-            <h3>Dodaj Ocenu</h3>
-            @using (Html.BeginForm("AddReview", "Home", FormMethod.Post, new { @class = "form-horizontal" }))
+                    }
+                </div>
+            }
+            else
             {
-                @Html.AntiForgeryToken()
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <p class="text-center">Još nema ocena. Budi prvi!</p>
+            }
+        </div>
 
-                <div class="form-group">
-                    @Html.Label("Ocena (1-5)", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.DropDownList("Vrednost", new SelectList(Enumerable.Range(1, 5)), "Izaberite ocenu", new { @class = "form-control", required = "required" })
+        <div class="text-center mt-4">
+            <button id="addReviewBtn" class="btn btn-primary">Dodaj Svoju Ocenu</button>
+        </div>
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div id="addReviewForm" style="display: none;" class="mt-4">
+                <h3>Dodaj Ocenu</h3>
+                @using (Html.BeginForm("OstaviOcenu", "Home", FormMethod.Post, new { @class = "form-horizontal" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="form-group mb-3">
+                        @Html.Label("Ocena (1-5)", htmlAttributes: new { @class = "form-label" })
+                        @Html.DropDownList("Vrednost", new SelectList(Enumerable.Range(1, 5)), "Izaberite ocenu", new { @class = "form-select", required = "required" })
                     </div>
-                </div>
 
-                <div class="form-group">
-                    @Html.Label("Komentar", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextArea("Komentar", null, new { @class = "form-control", rows = "3", required = "required", placeholder = "Vaš komentar o kafiću ili proizvodu..." })
+                    <div class="form-group mb-3">
+                        @Html.Label("Komentar", htmlAttributes: new { @class = "form-label" })
+                        @Html.TextArea("Komentar", null, new { @class = "form-control", rows = "3", required = "required", placeholder = "Vaš komentar..." })
                     </div>
-                </div>
 
-                <div class="form-group">
-                    @Html.Label("Za Proizvod (opciono)", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.DropDownList("ProizvodId", new SelectList(proizvodi ?? new List<A_Gde_Si_Ti_Pub.Models.Proizvod>(), "ProizvodId", "Naziv"), "Opšta ocena kafića", new { @class = "form-control" })
+                    <div class="form-group mb-3">
+                        @Html.Label("Za Proizvod (opciono)", htmlAttributes: new { @class = "form-label" })
+                        @Html.DropDownList("ProizvodId", new SelectList(proizvodi ?? new List<A_Gde_Si_Ti_Pub.Models.Proizvod>(), "ProizvodId", "Naziv"), "Opšta ocena kafića", new { @class = "form-select" })
                     </div>
-                </div>
 
-                <div class="form-group mt-3">
-                    <div class="col-md-offset-2 col-md-10">
+                    <div class="form-group">
                         <input type="submit" value="Pošalji Ocenu" class="btn btn-success" />
                         <button type="button" id="cancelReviewBtn" class="btn btn-secondary">Otkaži</button>
                     </div>
-                </div>
-            }
+                }
 
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <div class="alert alert-success mt-3">@TempData["SuccessMessage"]</div>
-            }
-        </div>
-    }
-</div>
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success mt-3">@TempData["SuccessMessage"]</div>
+                }
+            </div>
+        }
+    </div>
+</section>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-<script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Content/startbootstrap/js/scripts.js"></script>
+
+    <script>
         $(function () {
-
-             const isAuth = @Html.Raw(Json.Encode(User.Identity.IsAuthenticated));
+            const isAuth = @Html.Raw(Json.Encode(User.Identity.IsAuthenticated));
             $('#addReviewBtn').click(function () {
-
                 if (isAuth) {
-                    //Ulogovan
                     $('#addReviewForm').toggle();
                 } else {
-                    //Nije ulogovan - redirekcija na registraciju
                     window.location.href = '@Url.Action("Login", "Nalozi")';
                 }
             });
-
-            $('#cancelReviewBtn').click(function () {
-                $('#addReviewForm').hide();
-            });
-
-            // Optional: Client-side password match check
-            $('#registerFormInModal input[name="potvrdaLozinke"]').on('input', function () {
-                var password = $('#Password').val();
-                var confirm = $(this).val();
-                if (password !== confirm) {
-                    $('#confirmPasswordError').text('Lozinke se ne poklapaju.');
-                } else {
-                    $('#confirmPasswordError').text('');
-                }
-            });
-
             $('#cancelReviewBtn').click(function () {
                 $('#addReviewForm').hide();
             });
         });
-</script>
+    </script>
 }

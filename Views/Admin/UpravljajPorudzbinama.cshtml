@@ -4,7 +4,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Upravljanje porudžbinama</h2>
+<h2 class="naslov">Upravljanje porudžbinama</h2>
+<p class="podnaslov">
+    Ovde možete pregledati sve porudžbine, urediti status ili obrisati.
+</p>
 
 @if (TempData["SuccessMessage"] != null)
 {
@@ -15,10 +18,7 @@
     <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
 }
 
-<p>
-    Ovde možete pregledati sve porudžbine, urediti status ili obrisati.
-    @Html.ActionLink("Nazad na početnu", "Index", "Home", null, new { @class = "btn btn-secondary" })
-</p>
+<p>@Html.ActionLink("Nazad na profil", "Profil", "Home", null, new { @class = "btn btn-secondary" })</p>
 
 @if (!Model.Any())
 {
@@ -28,7 +28,7 @@
 }
 else
 {
-    <table class="table table-bordered table-striped, text-center">
+    <table class="table table-bordered table-striped text-center">
         <thead class="thead-dark">
             <tr>
                 <th>ID Porudžbine</th>
@@ -78,7 +78,7 @@ else
                         @using (Html.BeginForm("UrediPorudzbinu", "Admin", FormMethod.Post))
                         {
                             @Html.AntiForgeryToken()
-                            @Html.Hidden("porudzbinaId", porudzbina.PorudzbinaId) <!-- Ensures ID binds -->
+                            @Html.Hidden("porudzbinaId", porudzbina.PorudzbinaId)
 
                         <div class="input-group input-group-sm">
                             @Html.DropDownList("status",
@@ -102,7 +102,6 @@ else
         </tbody>
     </table>
 
-    <!-- Optional: Pagination or summary if many orders -->
     <div class="text-center mt-3">
         <p>Ukupno porudžbina: @Model.Count</p>
     </div>
@@ -110,5 +109,4 @@ else
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
-    <!-- No additional JS needed; confirm() is native -->
 }
